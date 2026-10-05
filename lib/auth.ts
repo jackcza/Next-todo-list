@@ -1,7 +1,7 @@
 import { createHash, randomBytes, randomInt } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
-import { PASSWORD_MAX, PASSWORD_MIN, SESSION_COOKIE, type CodePurpose } from "@/lib/constants";
+import { ADMIN_ROLE, PASSWORD_MAX, PASSWORD_MIN, SESSION_COOKIE, type CodePurpose } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 
 const SESSION_DAYS = 30;
@@ -76,10 +76,15 @@ export async function getCurrentUser() {
 
   const session = await prisma.session.findUnique({
     where: { tokenHash: sha256(token) },
-    include: { user: { select: { id: true, email: true } } },
+    include: { user: { select: { id: true, email: true, role: true } } },
   });
   if (!session || session.expiresAt < new Date()) return null;
   return session.user;
+}
+
+export async function getCurrentAdmin() {
+  const user = await getCurrentUser();
+  return user?.role === ADMIN_ROLE ? user : null;
 }
 
 export async function destroySession() {

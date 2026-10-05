@@ -240,6 +240,60 @@ body {
   color: #ef4444;
 }
 
+.admin-app {
+  box-sizing: border-box;
+  max-width: 1000px;
+  margin: 48px auto;
+  padding: 32px;
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px -12px rgba(79, 70, 229, 0.18);
+}
+
+.admin-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-header .todo-app-account {
+  gap: 12px;
+  margin-top: 0;
+}
+
+.admin-range {
+  margin-bottom: 16px;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-chart {
+  margin-bottom: 16px;
+}
+
+.admin-chart:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .admin-app {
+    margin: 24px auto;
+    padding: 20px;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .auth-card {
   max-width: 420px;
 }

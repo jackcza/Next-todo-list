@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE } from "@/lib/constants";
 
-const PUBLIC_PATHS = ["/login", "/register", "/forgot-password"];
+const PUBLIC_PATHS = ["/login", "/register", "/forgot-password", "/admin/login"];
 
 // Only checks that a session cookie exists; pages and API routes still validate it against the database.
 export function proxy(request: NextRequest) {
-  const isPublic = PUBLIC_PATHS.includes(request.nextUrl.pathname);
-  if (!isPublic && !request.cookies.has(SESSION_COOKIE)) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  const { pathname } = request.nextUrl;
+  if (!PUBLIC_PATHS.includes(pathname) && !request.cookies.has(SESSION_COOKIE)) {
+    const loginPath = pathname.startsWith("/admin") ? "/admin/login" : "/login";
+    return NextResponse.redirect(new URL(loginPath, request.url));
   }
   return NextResponse.next();
 }

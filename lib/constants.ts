@@ -1,5 +1,7 @@
 export const SESSION_COOKIE = "session";
 
+export const ADMIN_ROLE = "admin";
+
 export const RESEND_SECONDS = 60;
 export const PASSWORD_MIN = 8;
 // bcrypt ignores everything after 72 bytes.
