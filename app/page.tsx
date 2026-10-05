@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import TodoApp from "@/components/TodoApp";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { TODO_ORDER, TODO_SELECT } from "@/lib/todo";
+import { TODO_ORDER, TODO_SELECT, toTodo } from "@/lib/todo";
 
 export default async function Home() {
   const user = await getCurrentUser();
@@ -14,5 +14,5 @@ export default async function Home() {
     select: TODO_SELECT,
   });
 
-  return <TodoApp email={user.email} initialTodos={todos} />;
+  return <TodoApp email={user.email} initialTodos={todos.map(toTodo)} />;
 }

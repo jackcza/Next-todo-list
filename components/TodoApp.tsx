@@ -3,12 +3,14 @@
 import { LogoutOutlined } from "@ant-design/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import { App, Button } from "antd";
+import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import TodoFilter from "@/components/TodoFilter";
 import TodoInput from "@/components/TodoInput";
 import TodoList from "@/components/TodoList";
 import { ApiError, errorMessage, requestJson } from "@/lib/api-client";
+import { toDateKey, useToday } from "@/lib/date";
 import { STATUS, type Todo } from "@/lib/todo";
 
 type TodoAppProps = {
@@ -21,6 +23,7 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
   const { message } = App.useApp();
   const [todos, setTodos] = useState(initialTodos);
   const [filter, setFilter] = useState<string>(STATUS.IS_CREATE);
+  const today = useToday();
 
   const goToLogin = () => {
     router.replace("/login");
@@ -37,7 +40,7 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
 
   const addTodo = async (content: string) => {
     try {
-      const todo = await requestJson<Todo>("/api/todos", { method: "POST", body: { content } });
+      const todo = await requestJson<Todo>("/api/todos", { method: "POST", body: { content, date: toDateKey() } });
       setTodos((prev) => [...prev, todo]);
       return true;
     } catch (error) {
@@ -55,12 +58,23 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
     }
   };
 
+  const moveToDate = async (todo: Todo, date: string) => {
+    try {
+      const updated = await requestJson<Todo>(`/api/todos/${todo.id}`, { method: "PATCH", body: { date } });
+      // The server appends it to the end of the target day, so mirror that locally.
+      setTodos((prev) => [...prev.filter((item) => item.id !== updated.id), updated]);
+      message.success(`Moved to ${dayjs(date).format("MMM D")}`);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   const reorderTodos = async (activeId: string, overId: string) => {
     const prev = todos;
     const visible = prev.filter((item) => item.status === filter);
     const from = visible.findIndex((item) => item.id === activeId);
     const to = visible.findIndex((item) => item.id === overId);
-    if (from === -1 || to === -1) return;
+    if (from === -1 || to === -1 || visible[from].date !== visible[to].date) return;
 
     // Reorder only the visible items, keeping hidden ones in their original slots.
     const moved = arrayMove(visible, from, to);
@@ -99,7 +113,14 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
       </header>
       <TodoInput onSubmit={addTodo} />
       <TodoFilter filter={filter} setFilter={setFilter} todos={todos} />
-      <TodoList todos={todos} filter={filter} onChangeStatus={changeStatus} onReorder={reorderTodos} />
+      <TodoList
+        todos={todos}
+        filter={filter}
+        today={today}
+        onChangeStatus={changeStatus}
+        onReorder={reorderTodos}
+        onMove={moveToDate}
+      />
     </div>
   );
 }
