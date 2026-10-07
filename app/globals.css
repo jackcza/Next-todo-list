@@ -139,7 +139,21 @@ body {
 }
 
 .todo-date-picker {
-  width: 320px;
+  /* Popover adds 12px padding per side; keep the whole popover inside small screens. */
+  width: min(300px, calc(100vw - 48px));
+}
+
+.todo-date-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0 8px;
+}
+
+.todo-date-picker-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
 }
 
 .todo-container-list {

@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   DeleteOutlined,
   HolderOutlined,
+  LeftOutlined,
   RightOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
@@ -24,9 +25,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Calendar, Empty, Popover, Skeleton, Tooltip } from "antd";
+import { Button, Calendar, Empty, Popover, Skeleton } from "antd";
 import dayjs from "dayjs";
 import { useId, useState } from "react";
+import HoverTooltip from "@/components/HoverTooltip";
 import { formatDay, formatStamp, toDateKey } from "@/lib/date";
 import { STATUS, type Todo } from "@/lib/todo";
 
@@ -66,8 +68,29 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
   const datePicker = (
     <div className="todo-date-picker">
       <Calendar
+        // Uncontrolled so the header can page through months; the key resets it after a move.
+        key={item.date}
         fullscreen={false}
-        value={dayjs(item.date)}
+        defaultValue={dayjs(item.date)}
+        headerRender={({ value, onChange }) => (
+          <div className="todo-date-picker-header">
+            <Button
+              type="text"
+              size="small"
+              icon={<LeftOutlined />}
+              aria-label="Previous month"
+              onClick={() => onChange(value.subtract(1, "month"))}
+            />
+            <span className="todo-date-picker-title">{value.format("MMMM YYYY")}</span>
+            <Button
+              type="text"
+              size="small"
+              icon={<RightOutlined />}
+              aria-label="Next month"
+              onClick={() => onChange(value.add(1, "month"))}
+            />
+          </div>
+        )}
         onSelect={(value, { source }) => {
           if (source !== "date") return;
           setPickerOpen(false);
@@ -100,19 +123,22 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
         </div>
         <div className="todo-item-actions">
           {!isDeleted ? (
-            <Popover
-              content={datePicker}
-              trigger="click"
-              placement="bottomRight"
-              open={pickerOpen}
-              onOpenChange={setPickerOpen}
-            >
-              <Tooltip title="Move to another date">
+            // The tooltip wraps the popover (not the other way round) so the popover's click handlers
+            // still reach the icon when HoverTooltip renders no tooltip on touch screens.
+            <HoverTooltip title="Move to another date">
+              <Popover
+                content={datePicker}
+                trigger="click"
+                // Centered placements let antd shift the popover sideways to stay on narrow screens.
+                placement="bottom"
+                open={pickerOpen}
+                onOpenChange={setPickerOpen}
+              >
                 <CalendarOutlined className="todo-action todo-action-move" />
-              </Tooltip>
-            </Popover>
+              </Popover>
+            </HoverTooltip>
           ) : null}
-          <Tooltip title={isDone ? "Mark as active" : "Mark as done"}>
+          <HoverTooltip title={isDone ? "Mark as active" : "Mark as done"}>
             {isDone ? (
               <UndoOutlined
                 className="todo-action todo-action-undo"
@@ -124,14 +150,14 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
                 onClick={() => onChangeStatus(item, STATUS.IS_DONE)}
               />
             )}
-          </Tooltip>
+          </HoverTooltip>
           {!isDeleted ? (
-            <Tooltip title="Delete">
+            <HoverTooltip title="Delete">
               <DeleteOutlined
                 className="todo-action todo-action-delete"
                 onClick={() => onChangeStatus(item, STATUS.IS_DELETE)}
               />
-            </Tooltip>
+            </HoverTooltip>
           ) : null}
         </div>
       </div>
