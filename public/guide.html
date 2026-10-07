@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>怎么用 Todo List</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 12px;
+        background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 50%, #fdf2f8 100%);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #1e293b;
+      }
+      .wrap { width: 100%; max-width: 420px; }
+      h1 {
+        margin: 0 0 14px;
+        text-align: center;
+        font-size: 22px;
+        background: linear-gradient(90deg, #6366f1, #a855f7);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .stage { position: relative; }
+      .card {
+        padding: 22px 18px 16px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 20px 50px -12px rgba(79, 70, 229, 0.18);
+      }
+      .input-row { display: flex; gap: 8px; }
+      .input-row input, .input-row button, .tabs button, .day, .icon {
+        font: inherit;
+      }
+      .input-row input {
+        flex: 1;
+        min-width: 0;
+        height: 40px;
+        padding: 0 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        outline: none;
+        font-size: 14px;
+      }
+      .input-row input:focus { border-color: #6366f1; }
+      .input-row button {
+        height: 40px;
+        padding: 0 14px;
+        border: none;
+        border-radius: 10px;
+        background: #6366f1;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .input-row button:disabled { background: #e2e8f0; color: #94a3b8; }
+      .tabs {
+        display: flex;
+        margin: 14px 0;
+        padding: 3px;
+        border-radius: 10px;
+        background: #f1f5f9;
+      }
+      .tabs button {
+        flex: 1;
+        height: 30px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: #64748b;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .tabs button.on { background: #fff; color: #1e293b; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+      .group { margin-top: 8px; }
+      .day {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        margin-bottom: 6px;
+        padding: 0 2px;
+        border: none;
+        background: none;
+        text-align: left;
+        cursor: pointer;
+      }
+      .day b { font-size: 13px; }
+      .day em { font-style: normal; font-size: 12px; color: #94a3b8; }
+      .day .count {
+        margin-left: auto;
+        min-width: 18px;
+        padding: 0 6px;
+        border-radius: 9px;
+        background: #eef2ff;
+        color: #6366f1;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+      }
+      .arrow { font-size: 10px; color: #94a3b8; transition: transform 0.25s; }
+      .arrow.open { transform: rotate(90deg); }
+      .list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        border: 1px solid #eef0f5;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .list li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f3f8;
+        background: #fff;
+        transition: transform 0.45s ease, box-shadow 0.2s;
+      }
+      .list li:last-child { border-bottom: none; }
+      .list li.dragging { position: relative; z-index: 1; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.18); }
+      .handle { color: #cbd5e1; letter-spacing: -1px; }
+      .body { flex: 1; min-width: 0; }
+      .body strong { display: block; font-size: 14px; font-weight: 500; }
+      .body span { font-size: 11px; color: #94a3b8; }
+      .done strong { color: #94a3b8; text-decoration: line-through; }
+      .icons { display: flex; gap: 10px; color: #94a3b8; font-size: 15px; }
+      .icon.hot { color: #6366f1; }
+      .popover {
+        position: absolute;
+        z-index: 2;
+        width: 220px;
+        padding: 10px;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+        opacity: 0;
+        transform: translateY(-6px);
+        pointer-events: none;
+        transition: opacity 0.25s, transform 0.25s;
+      }
+      .popover.show { opacity: 1; transform: none; }
+      .popover header { margin-bottom: 6px; text-align: center; font-size: 12px; font-weight: 600; }
+      .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+      .grid i, .grid b {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 22px;
+        border-radius: 6px;
+        font-style: normal;
+        font-size: 11px;
+        font-weight: 500;
+      }
+      .grid i { color: #94a3b8; }
+      .grid b.pick { background: #6366f1; color: #fff; }
+      .cursor {
+        position: absolute;
+        z-index: 5;
+        top: 0;
+        left: 0;
+        width: 18px;
+        height: 18px;
+        margin: -2px 0 0 -2px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.18);
+        border: 2px solid #6366f1;
+        transform: translate(-40px, -40px);
+        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        pointer-events: none;
+      }
+      .cursor.down { background: rgba(99, 102, 241, 0.45); }
+      .caption { margin-top: 14px; text-align: center; }
+      .dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 8px; }
+      .dots i { width: 7px; height: 7px; border-radius: 50%; background: #ddd6fe; }
+      .dots i.on { background: #6366f1; }
+      .caption p { min-height: 22px; margin: 0; font-size: 14px; color: #475569; }
+      .controls { margin-top: 10px; text-align: center; }
+      .controls button {
+        border: none;
+        background: none;
+        color: #6366f1;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>30 秒看懂 Todo List</h1>
+      <div class="stage" id="stage">
+        <div class="card">
+          <div class="input-row">
+            <input id="task" placeholder="What needs to be done?" readonly />
+            <button id="add" type="button" disabled>+ Add</button>
+          </div>
+          <div class="tabs" id="tabs">
+            <button type="button" class="on" data-tab="0">Active (0)</button>
+            <button type="button" data-tab="1">Done (0)</button>
+            <button type="button" data-tab="2">Deleted (0)</button>
+          </div>
+          <div id="groups"></div>
+        </div>
+        <div class="popover" id="popover">
+          <header>October 2026</header>
+          <div class="grid" id="grid"></div>
+        </div>
+        <div class="cursor" id="cursor"></div>
+      </div>
+      <div class="caption">
+        <div class="dots" id="dots"></div>
+        <p id="caption"></p>
+        <div class="controls"><button type="button" id="replay">重新播放</button></div>
+      </div>
+    </div>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const STEPS = [
+        "在输入框写下任务，点 Add，它会归到今天",
+        "点对勾标记完成；在 Done 里点撤销可以改回来",
+        "按住左侧 ⋮⋮ 拖动，调整同一天里的顺序",
+        "点日历图标，把任务挪到别的日期",
+        "今天以外的日期默认收起，点标题可以展开",
+      ];
+      let token = 0;
+
+      $("dots").innerHTML = STEPS.map(() => "<i></i>").join("");
+
+      function caption(index) {
+        [...$("dots").children].forEach((dot, i) => dot.classList.toggle("on", i === index));
+        $("caption").textContent = STEPS[index];
+      }
+
+      function tabs(active, counts) {
+        [...$("tabs").children].forEach((button, i) => {
+          button.classList.toggle("on", i === active);
+          const name = ["Active", "Done", "Deleted"][i];
+          button.textContent = `${name} (${counts[i]})`;
+        });
+      }
+
+      function task(text, meta, options = {}) {
+        return `<li class="${options.done ? "done" : ""} ${options.cls || ""}" ${options.id ? `id="${options.id}"` : ""}>
+          <span class="handle">⋮⋮</span>
+          <div class="body"><strong>${text}</strong><span>${meta}</span></div>
+          <span class="icons">${options.icons || "📅 ✓ 🗑"}</span>
+        </li>`;
+      }
+
+      function group(label, detail, count, items, options = {}) {
+        const open = options.open !== false;
+        return `<section class="group">
+          <button type="button" class="day" ${options.id ? `id="${options.id}"` : ""}>
+            ${options.arrow ? `<span class="arrow ${open ? "open" : ""}">❯</span>` : ""}
+            <b>${label}</b>${detail ? `<em>${detail}</em>` : ""}<span class="count">${count}</span>
+          </button>
+          ${open ? `<ul class="list">${items}</ul>` : ""}
+        </section>`;
+      }
+
+      function pointAt(el) {
+        const stage = $("stage").getBoundingClientRect();
+        const box = el.getBoundingClientRect();
+        $("cursor").style.transform = `translate(${box.left - stage.left + box.width / 2}px, ${box.top - stage.top + box.height / 2}px)`;
+      }
+
+      async function tap(el) {
+        pointAt(el);
+        await sleep(600);
+        $("cursor").classList.add("down");
+        await sleep(140);
+        $("cursor").classList.remove("down");
+      }
+
+      async function sceneAdd() {
+        caption(0);
+        $("task").value = "";
+        $("add").disabled = true;
+        $("popover").classList.remove("show");
+        tabs(0, [0, 0, 0]);
+        $("groups").innerHTML = group("Today", "Oct 7", 0, "");
+        pointAt($("task"));
+        await sleep(500);
+        for (const char of "Read a book") {
+          $("task").value += char;
+          $("add").disabled = false;
+          await sleep(70);
+        }
+        await tap($("add"));
+        $("task").value = "";
+        $("add").disabled = true;
+        tabs(0, [1, 0, 0]);
+        $("groups").innerHTML = group("Today", "Oct 7", 1, task("Read a book", "Added 14:06"));
+        await sleep(1100);
+      }
+
+      async function sceneDone() {
+        caption(1);
+        const item = $("groups").querySelector("li");
+        const check = item.querySelector(".icons");
+        check.innerHTML = '📅 <span class="icon hot" id="check">✓</span> 🗑';
+        await tap($("check"));
+        item.classList.add("done");
+        await sleep(700);
+        tabs(1, [0, 1, 0]);
+        $("groups").innerHTML = group("Today", "Oct 7", 1, task("Read a book", "Added 14:06 · Done 14:07", { done: true, icons: '📅 <span id="undo">↩</span>' }));
+        await sleep(900);
+        await tap($("undo"));
+        await sleep(600);
+      }
+
+      async function sceneDrag() {
+        caption(2);
+        tabs(0, [2, 0, 0]);
+        $("groups").innerHTML = group(
+          "Today",
+          "Oct 7",
+          2,
+          task("Buy milk", "Added 09:30", { id: "a" }) + task("Call dentist", "Added 11:10", { id: "b" }),
+        );
+        await sleep(400);
+        await tap($("b").querySelector(".handle"));
+        $("b").classList.add("dragging");
+        $("b").style.transform = "translateY(-52px)";
+        await sleep(700);
+        $("a").style.transform = "translateY(52px)";
+        await sleep(500);
+        $("b").classList.remove("dragging");
+        $("b").style.transform = "";
+        $("a").style.transform = "";
+        $("groups").querySelector(".list").insertBefore($("b"), $("a"));
+        await sleep(900);
+      }
+
+      async function sceneMove() {
+        caption(3);
+        tabs(0, [1, 0, 0]);
+        $("groups").innerHTML = group("Today", "Oct 7", 1, task("Buy milk", "Added 09:30", { icons: '<span id="cal">📅</span> ✓ 🗑' }));
+        const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+        const cells = [...Array(4).fill(""), ...Array.from({ length: 31 }, (_, i) => i + 1)];
+        $("grid").innerHTML =
+          days.map((day) => `<i>${day}</i>`).join("") +
+          cells.map((day) => (day ? `<b ${day === 8 ? 'class="pick" id="day8"' : ""}>${day}</b>` : "<b></b>")).join("");
+        await sleep(300);
+        await tap($("cal"));
+        const cal = $("cal").getBoundingClientRect();
+        const stage = $("stage").getBoundingClientRect();
+        const pop = $("popover");
+        pop.style.top = `${cal.bottom - stage.top + 8}px`;
+        pop.style.left = `${Math.max(8, cal.right - stage.left - 220)}px`;
+        pop.classList.add("show");
+        await sleep(500);
+        await tap($("day8"));
+        pop.classList.remove("show");
+        tabs(0, [1, 0, 0]);
+        $("groups").innerHTML = group("Tomorrow", "Oct 8", 1, task("Buy milk", "Added Oct 7 09:30"));
+        await sleep(1200);
+      }
+
+      async function sceneFold() {
+        caption(4);
+        tabs(0, [3, 0, 0]);
+        const yesterday = task("Call dentist", "Added 15:00") + task("Fix bike", "Added 18:45");
+        $("groups").innerHTML =
+          group("Today", "Oct 7", 1, task("Write report", "Added 09:30")) +
+          group("Yesterday", "Oct 6", 2, "", { arrow: true, open: false, id: "y" });
+        await sleep(600);
+        await tap($("y"));
+        $("groups").innerHTML =
+          group("Today", "Oct 7", 1, task("Write report", "Added 09:30")) +
+          group("Yesterday", "Oct 6", 2, yesterday, { arrow: true, id: "y" });
+        await sleep(1400);
+      }
+
+      async function play() {
+        const run = ++token;
+        while (run === token) {
+          await sceneAdd();
+          if (run !== token) return;
+          await sceneDone();
+          if (run !== token) return;
+          await sceneDrag();
+          if (run !== token) return;
+          await sceneMove();
+          if (run !== token) return;
+          await sceneFold();
+        }
+      }
+
+      $("replay").addEventListener("click", play);
+      play();
+    </script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 "use client";
 
-import { LogoutOutlined } from "@ant-design/icons";
+import { LogoutOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import { App, Button } from "antd";
 import dayjs from "dayjs";
@@ -107,6 +107,9 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
         </p>
         <div className="todo-app-account">
           <span>{email}</span>
+          <Button size="small" type="text" icon={<QuestionCircleOutlined />} href="/guide.html" target="_blank">
+            Guide
+          </Button>
           <InstallButton />
           <Button size="small" type="text" icon={<LogoutOutlined />} onClick={logout}>
             Log out
