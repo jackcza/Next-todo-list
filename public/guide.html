@@ -18,6 +18,18 @@
         color: #1e293b;
       }
       .wrap { width: 100%; max-width: 420px; }
+      .lang { display: flex; justify-content: flex-end; gap: 2px; margin-bottom: 10px; }
+      .lang button {
+        padding: 3px 10px;
+        border: none;
+        border-radius: 999px;
+        background: none;
+        color: #94a3b8;
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .lang button.on { background: #fff; color: #6366f1; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
       h1 {
         margin: 0 0 14px;
         text-align: center;
@@ -190,11 +202,196 @@
         font-size: 13px;
         cursor: pointer;
       }
+
+      .section { margin-top: 40px; }
+      h2 { margin: 0 0 12px; text-align: center; font-size: 18px; color: #334155; }
+      .platforms { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+      .platforms button {
+        padding: 6px 14px;
+        border: 1px solid #ddd6fe;
+        border-radius: 999px;
+        background: #fff;
+        color: #64748b;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .platforms button.on { border-color: #6366f1; background: #6366f1; color: #fff; }
+      .phone-stage { position: relative; width: 260px; margin: 0 auto; }
+      .phone {
+        position: relative;
+        height: 520px;
+        border: 10px solid #1e293b;
+        border-radius: 38px;
+        background: #f8fafc;
+        overflow: hidden;
+        box-shadow: 0 20px 50px -12px rgba(30, 41, 59, 0.35);
+      }
+      .status {
+        position: relative;
+        z-index: 4;
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 18px 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .layer { position: absolute; inset: 0; transition: opacity 0.35s, transform 0.35s; }
+      .hidden { opacity: 0; pointer-events: none; }
+      .browser { display: flex; flex-direction: column; padding-top: 28px; background: #f1f5f9; }
+      .urlbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 4px 10px 6px;
+        padding: 7px 10px;
+        border-radius: 12px;
+        background: #e2e8f0;
+        font-size: 11px;
+        color: #334155;
+      }
+      .urlbar .url { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+      .urlbar .menu { font-size: 15px; line-height: 1; font-weight: 700; }
+      .page { flex: 1; margin: 0 8px; padding: 16px 12px; border-radius: 14px; background: #fff; }
+      .mini-title {
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 700;
+        background: linear-gradient(90deg, #6366f1, #a855f7);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .mini-input { height: 26px; margin-bottom: 10px; border: 1px solid #e2e8f0; border-radius: 8px; }
+      .mini-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 4px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 12px;
+      }
+      .mini-row i { width: 10px; height: 10px; border: 2px solid #c7d2fe; border-radius: 50%; }
+      .toolbar {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 44px;
+        color: #2563eb;
+        font-size: 18px;
+      }
+      .toolbar svg { width: 20px; height: 20px; }
+      .sheet {
+        top: auto;
+        z-index: 3;
+        padding: 10px 10px 18px;
+        border-radius: 18px 18px 0 0;
+        background: #f1f5f9;
+        box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.15);
+      }
+      .sheet.hidden, .dialog-ios.hidden { transform: translateY(100%); opacity: 1; }
+      .sheet-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding: 6px;
+        border-radius: 12px;
+        background: #fff;
+        font-size: 11px;
+      }
+      .sheet-head img, .dialog img { width: 34px; height: 34px; border-radius: 8px; }
+      .sheet-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: #fff;
+        font-size: 12px;
+      }
+      .sheet-row:first-of-type { border-radius: 12px 12px 0 0; }
+      .sheet-row:last-of-type { border-radius: 0 0 12px 12px; }
+      .sheet-row + .sheet-row { border-top: 1px solid #e2e8f0; }
+      .sheet-row.hot, .dropdown div.hot { background: #e0e7ff; }
+      .dropdown {
+        inset: 64px 8px auto auto;
+        z-index: 3;
+        width: 150px;
+        padding: 6px 0;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.2);
+        transform-origin: top right;
+      }
+      .dropdown.hidden { transform: scale(0.9); }
+      .dropdown div { padding: 9px 14px; font-size: 12px; }
+      .dialog-ios {
+        z-index: 3;
+        top: 28px;
+        border-radius: 18px 18px 0 0;
+        background: #f1f5f9;
+      }
+      .dialog-bar {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 14px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .dialog-bar span:first-child, .dialog-bar .confirm { color: #2563eb; font-weight: 500; }
+      .dialog-bar .confirm { font-weight: 700; }
+      .dialog {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 4px 12px;
+        padding: 10px;
+        border-radius: 12px;
+        background: #fff;
+        font-size: 12px;
+      }
+      .dialog small { display: block; color: #94a3b8; font-size: 10px; }
+      .dialog-android {
+        inset: auto 14px 170px;
+        z-index: 3;
+        padding: 18px 16px 12px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.3);
+      }
+      .dialog-android.hidden { transform: scale(0.92); }
+      .dialog-android b { display: block; margin-bottom: 12px; font-size: 14px; }
+      .dialog-android .dialog { margin: 0 0 14px; padding: 0; }
+      .dialog-actions { display: flex; justify-content: flex-end; gap: 18px; font-size: 12px; color: #2563eb; }
+      .dialog-actions .confirm { font-weight: 700; }
+      .home {
+        z-index: 2;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-content: start;
+        gap: 18px 8px;
+        padding: 46px 14px 0;
+        background: linear-gradient(160deg, #818cf8 0%, #c084fc 55%, #f472b6 100%);
+      }
+      .app-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9px; color: #fff; }
+      .app-icon i, .app-icon img { width: 44px; height: 44px; border-radius: 12px; }
+      .app-icon i { background: rgba(255, 255, 255, 0.35); }
+      #appIcon { transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s; }
+      #appIcon.hidden { transform: scale(0.2); }
+      .standalone { z-index: 3; display: flex; flex-direction: column; padding-top: 30px; background: #fff; }
+      .standalone.hidden { transform: scale(0.85); }
+      .standalone .page { margin: 0; border-radius: 0; }
+      .note { margin: 14px 0 0; text-align: center; font-size: 12px; color: #94a3b8; line-height: 1.6; }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <h1>30 秒看懂 Todo List</h1>
+      <div class="lang" id="lang">
+        <button type="button" data-lang="zh">中文</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+      <h1 data-i18n="title"></h1>
       <div class="stage" id="stage">
         <div class="card">
           <div class="input-row">
@@ -217,26 +414,225 @@
       <div class="caption">
         <div class="dots" id="dots"></div>
         <p id="caption"></p>
-        <div class="controls"><button type="button" id="replay">重新播放</button></div>
+        <div class="controls"><button type="button" id="replay" data-i18n="replay"></button></div>
       </div>
+
+      <section class="section">
+        <h2 data-i18n="installTitle"></h2>
+        <div class="platforms" id="platforms">
+          <button type="button" class="on" data-os="ios">iPhone · Safari</button>
+          <button type="button" data-os="android">Android · Chrome</button>
+        </div>
+        <div class="phone-stage" id="phoneStage">
+          <div class="phone">
+            <div class="status"><span>14:06</span><span>5G ▮▮▮</span></div>
+
+            <div class="layer browser" id="browser">
+              <div class="urlbar">
+                <span class="url">🔒 todo-next.vercel.app</span>
+                <span class="menu" id="menu">⋮</span>
+              </div>
+              <div class="page">
+                <div class="mini-title">Todo List</div>
+                <div class="mini-input"></div>
+                <div class="mini-row"><i></i><span>Read a book</span></div>
+                <div class="mini-row"><i></i><span>Buy milk</span></div>
+                <div class="mini-row"><i></i><span>Call dentist</span></div>
+              </div>
+              <div class="toolbar" id="toolbar">
+                <span>‹</span>
+                <span>›</span>
+                <span id="share" aria-label="Share">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3v12" /><path d="M8 7l4-4 4 4" /><path d="M6 11v9h12v-9" />
+                  </svg>
+                </span>
+                <span>☐</span>
+                <span>⧉</span>
+              </div>
+            </div>
+
+            <div class="layer sheet hidden" id="sheet">
+              <div class="sheet-head">
+                <img src="/icons/icon-192.png" alt="" />
+                <div><b>Todo List</b><br />todo-next.vercel.app</div>
+              </div>
+              <div class="sheet-row"><span data-i18n="copy"></span><span>⧉</span></div>
+              <div class="sheet-row"><span data-i18n="readingList"></span><span>👓</span></div>
+              <div class="sheet-row" id="addHome"><span data-i18n="addToHome"></span><span>⊞</span></div>
+              <div class="sheet-row"><span data-i18n="bookmark"></span><span>📖</span></div>
+            </div>
+
+            <div class="layer dropdown hidden" id="dropdown">
+              <div data-i18n="newTab"></div>
+              <div data-i18n="bookmarks"></div>
+              <div data-i18n="history"></div>
+              <div id="installItem" data-i18n="installApp"></div>
+              <div data-i18n="shareMenu"></div>
+            </div>
+
+            <div class="layer dialog-ios hidden" id="dialogIos">
+              <div class="dialog-bar"><span data-i18n="cancel"></span><span data-i18n="addToHome"></span><span class="confirm" id="iosAdd" data-i18n="add"></span></div>
+              <div class="dialog">
+                <img src="/icons/icon-192.png" alt="" />
+                <div><b>Todo List</b><small>todo-next.vercel.app</small></div>
+              </div>
+            </div>
+
+            <div class="layer dialog-android hidden" id="dialogAndroid">
+              <b data-i18n="installPrompt"></b>
+              <div class="dialog">
+                <img src="/icons/icon-192.png" alt="" />
+                <div><b>Todo List</b><small>todo-next.vercel.app</small></div>
+              </div>
+              <div class="dialog-actions"><span data-i18n="cancel"></span><span class="confirm" id="androidInstall" data-i18n="install"></span></div>
+            </div>
+
+            <div class="layer home hidden" id="home">
+              <div class="app-icon"><i></i><span data-i18n="camera"></span></div>
+              <div class="app-icon"><i></i><span data-i18n="photos"></span></div>
+              <div class="app-icon"><i></i><span data-i18n="maps"></span></div>
+              <div class="app-icon"><i></i><span data-i18n="weather"></span></div>
+              <div class="app-icon"><i></i><span data-i18n="music"></span></div>
+              <div class="app-icon"><i></i><span data-i18n="calendar"></span></div>
+              <div class="app-icon"><i></i><span data-i18n="settings"></span></div>
+              <div class="app-icon hidden" id="appIcon"><img src="/icons/icon-192.png" alt="" />Todo List</div>
+            </div>
+
+            <div class="layer standalone hidden" id="standalone">
+              <div class="page">
+                <div class="mini-title">Todo List</div>
+                <div class="mini-input"></div>
+                <div class="mini-row"><i></i><span>Read a book</span></div>
+                <div class="mini-row"><i></i><span>Buy milk</span></div>
+                <div class="mini-row"><i></i><span>Call dentist</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="cursor" id="phoneCursor"></div>
+        </div>
+        <div class="caption">
+          <div class="dots" id="installDots"></div>
+          <p id="installCaption"></p>
+        </div>
+        <p class="note" data-i18n-html="desktopNote"></p>
+      </section>
     </div>
     <script>
       const $ = (id) => document.getElementById(id);
       const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-      const STEPS = [
-        "在输入框写下任务，点 Add，它会归到今天",
-        "点对勾标记完成；在 Done 里点撤销可以改回来",
-        "按住左侧 ⋮⋮ 拖动，调整同一天里的顺序",
-        "点日历图标，把任务挪到别的日期",
-        "今天以外的日期默认收起，点标题可以展开",
-      ];
-      let token = 0;
+      const I18N = {
+        zh: {
+          pageTitle: "怎么用 Todo List",
+          title: "30 秒看懂 Todo List",
+          replay: "重新播放",
+          installTitle: "添加到手机主屏幕",
+          steps: [
+            "在输入框写下任务，点 Add，它会归到今天",
+            "点对勾标记完成；在 Done 里点撤销可以改回来",
+            "按住左侧 ⋮⋮ 拖动，调整同一天里的顺序",
+            "点日历图标，把任务挪到别的日期",
+            "今天以外的日期默认收起，点标题可以展开",
+          ],
+          installSteps: {
+            ios: [
+              "用 Safari 打开应用，点底部的分享按钮（新版 iOS 先点地址栏的 ⋯，再点分享）",
+              "在分享菜单里选「添加到主屏幕」",
+              "确认名称，点右上角「添加」",
+              "主屏幕出现 Todo List 图标，点开就是全屏应用",
+            ],
+            android: [
+              "用 Chrome 打开应用，点右上角 ⋮（也可以点应用顶部的 Install app）",
+              "在菜单里选「安装应用」",
+              "在弹窗中点「安装」",
+              "主屏幕出现 Todo List 图标，点开就是全屏应用",
+            ],
+          },
+          copy: "拷贝",
+          readingList: "添加到阅读列表",
+          addToHome: "添加到主屏幕",
+          bookmark: "添加书签",
+          newTab: "新标签页",
+          bookmarks: "书签",
+          history: "历史记录",
+          installApp: "安装应用",
+          shareMenu: "分享…",
+          cancel: "取消",
+          add: "添加",
+          installPrompt: "安装应用？",
+          install: "安装",
+          camera: "相机",
+          photos: "照片",
+          maps: "地图",
+          weather: "天气",
+          music: "音乐",
+          calendar: "日历",
+          settings: "设置",
+          desktopNote: "电脑上用 Chrome 或 Edge：点地址栏右侧的安装图标，<br />或点应用顶部的 Install app 按钮。",
+        },
+        en: {
+          pageTitle: "How to use Todo List",
+          title: "Todo List in 30 seconds",
+          replay: "Replay",
+          installTitle: "Add to your home screen",
+          steps: [
+            "Type a task and tap Add — it goes under Today",
+            "Tap the check to mark it done; tap undo in Done to bring it back",
+            "Hold the ⋮⋮ handle and drag to reorder tasks within a day",
+            "Tap the calendar icon to move a task to another date",
+            "Days other than today start collapsed — tap the header to expand",
+          ],
+          installSteps: {
+            ios: [
+              "Open the app in Safari and tap Share at the bottom (on newer iOS, tap ⋯ in the address bar first)",
+              "Choose \"Add to Home Screen\" in the share sheet",
+              "Check the name and tap \"Add\" in the top-right",
+              "The Todo List icon appears on your home screen and opens full screen",
+            ],
+            android: [
+              "Open the app in Chrome and tap ⋮ in the top-right (or the Install app button in the app)",
+              "Choose \"Install app\" in the menu",
+              "Tap \"Install\" in the dialog",
+              "The Todo List icon appears on your home screen and opens full screen",
+            ],
+          },
+          copy: "Copy",
+          readingList: "Add to Reading List",
+          addToHome: "Add to Home Screen",
+          bookmark: "Add Bookmark",
+          newTab: "New tab",
+          bookmarks: "Bookmarks",
+          history: "History",
+          installApp: "Install app",
+          shareMenu: "Share…",
+          cancel: "Cancel",
+          add: "Add",
+          installPrompt: "Install app?",
+          install: "Install",
+          camera: "Camera",
+          photos: "Photos",
+          maps: "Maps",
+          weather: "Weather",
+          music: "Music",
+          calendar: "Calendar",
+          settings: "Settings",
+          desktopNote: "On desktop, use Chrome or Edge: click the install icon in the address bar,<br />or the Install app button at the top of the app.",
+        },
+      };
+      const LANGS = Object.keys(I18N);
+      const saved = new URLSearchParams(location.search).get("lang") || localStorage.getItem("guide-lang");
+      let lang = LANGS.includes(saved) ? saved : navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en";
+      const t = () => I18N[lang];
 
-      $("dots").innerHTML = STEPS.map(() => "<i></i>").join("");
+      let token = 0;
+      let step = 0;
+
+      $("dots").innerHTML = t().steps.map(() => "<i></i>").join("");
 
       function caption(index) {
+        step = index;
         [...$("dots").children].forEach((dot, i) => dot.classList.toggle("on", i === index));
-        $("caption").textContent = STEPS[index];
+        $("caption").textContent = t().steps[index];
       }
 
       function tabs(active, counts) {
@@ -266,18 +662,19 @@
         </section>`;
       }
 
-      function pointAt(el) {
-        const stage = $("stage").getBoundingClientRect();
+      function pointAt(el, stageId = "stage", cursorId = "cursor") {
+        const stage = $(stageId).getBoundingClientRect();
         const box = el.getBoundingClientRect();
-        $("cursor").style.transform = `translate(${box.left - stage.left + box.width / 2}px, ${box.top - stage.top + box.height / 2}px)`;
+        $(cursorId).style.transform = `translate(${box.left - stage.left + box.width / 2}px, ${box.top - stage.top + box.height / 2}px)`;
       }
 
-      async function tap(el) {
-        pointAt(el);
+      async function tap(el, stageId, cursorId) {
+        const cursor = $(cursorId || "cursor");
+        pointAt(el, stageId, cursorId);
         await sleep(600);
-        $("cursor").classList.add("down");
+        cursor.classList.add("down");
         await sleep(140);
-        $("cursor").classList.remove("down");
+        cursor.classList.remove("down");
       }
 
       async function sceneAdd() {
@@ -396,7 +793,114 @@
       }
 
       $("replay").addEventListener("click", play);
+
+      const LAYERS = ["sheet", "dropdown", "dialogIos", "dialogAndroid", "home", "standalone"];
+      let os = "ios";
+      let installToken = 0;
+      let installStep = 0;
+
+      function installCaption(index) {
+        installStep = index;
+        const steps = t().installSteps[os];
+        $("installDots").innerHTML = steps.map((_, i) => `<i class="${i === index ? "on" : ""}"></i>`).join("");
+        $("installCaption").textContent = steps[index];
+      }
+
+      const show = (id) => $(id).classList.remove("hidden");
+      const hide = (id) => $(id).classList.add("hidden");
+      const phoneTap = (id) => tap($(id), "phoneStage", "phoneCursor");
+
+      function resetPhone() {
+        LAYERS.forEach(hide);
+        hide("appIcon");
+        ["addHome", "installItem"].forEach((id) => $(id).classList.remove("hot"));
+        $("toolbar").style.display = os === "ios" ? "" : "none";
+        $("menu").style.visibility = os === "android" ? "visible" : "hidden";
+      }
+
+      async function installOnce(run) {
+        resetPhone();
+        installCaption(0);
+        await sleep(700);
+        if (os === "ios") {
+          await phoneTap("share");
+          show("sheet");
+          await sleep(900);
+          if (run !== installToken) return;
+          installCaption(1);
+          await phoneTap("addHome");
+          $("addHome").classList.add("hot");
+          await sleep(300);
+          hide("sheet");
+          show("dialogIos");
+          await sleep(800);
+          if (run !== installToken) return;
+          installCaption(2);
+          await phoneTap("iosAdd");
+          hide("dialogIos");
+        } else {
+          await phoneTap("menu");
+          show("dropdown");
+          await sleep(900);
+          if (run !== installToken) return;
+          installCaption(1);
+          await phoneTap("installItem");
+          $("installItem").classList.add("hot");
+          await sleep(300);
+          hide("dropdown");
+          show("dialogAndroid");
+          await sleep(800);
+          if (run !== installToken) return;
+          installCaption(2);
+          await phoneTap("androidInstall");
+          hide("dialogAndroid");
+        }
+        if (run !== installToken) return;
+        installCaption(3);
+        show("home");
+        await sleep(500);
+        show("appIcon");
+        await sleep(900);
+        await phoneTap("appIcon");
+        if (run !== installToken) return;
+        show("standalone");
+        await sleep(2000);
+      }
+
+      async function playInstall() {
+        const run = ++installToken;
+        while (run === installToken) await installOnce(run);
+      }
+
+      $("platforms").addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button || button.dataset.os === os) return;
+        os = button.dataset.os;
+        [...$("platforms").children].forEach((b) => b.classList.toggle("on", b === button));
+        playInstall();
+      });
+
+      function applyLang() {
+        document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+        document.title = t().pageTitle;
+        document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t()[el.dataset.i18n]));
+        document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = t()[el.dataset.i18nHtml]));
+        [...$("lang").children].forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
+        caption(step);
+        installCaption(installStep);
+      }
+
+      $("lang").addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button || button.dataset.lang === lang) return;
+        lang = button.dataset.lang;
+        localStorage.setItem("guide-lang", lang);
+        applyLang();
+      });
+
+      applyLang();
       play();
+      playInstall();
     </script>
   </body>
 </html>
