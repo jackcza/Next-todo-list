@@ -6,6 +6,7 @@ import { App, Button } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import InstallButton from "@/components/InstallButton";
 import TodoFilter from "@/components/TodoFilter";
 import TodoInput from "@/components/TodoInput";
 import TodoList from "@/components/TodoList";
@@ -106,6 +107,7 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
         </p>
         <div className="todo-app-account">
           <span>{email}</span>
+          <InstallButton />
           <Button size="small" type="text" icon={<LogoutOutlined />} onClick={logout}>
             Log out
           </Button>

@@ -45,6 +45,7 @@ body {
 
 .todo-app-account {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 4px;
@@ -292,6 +293,12 @@ body {
   .admin-stats {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.install-hint {
+  display: block;
+  max-width: 220px;
+  font-size: 13px;
 }
 
 .auth-card {

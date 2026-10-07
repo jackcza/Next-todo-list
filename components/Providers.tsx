@@ -18,6 +18,18 @@ export default function Providers({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    if (process.env.NODE_ENV === "production") {
+      navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" }).catch(() => undefined);
+    } else {
+      // A worker left over from a production run would serve stale assets and break hot reload.
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) registration.unregister();
+      });
+    }
+  }, []);
+
   return (
     <ConfigProvider theme={{ token: { colorPrimary: "#6366f1", borderRadius: 10 } }}>
       <App>{children}</App>
