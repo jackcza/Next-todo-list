@@ -39,6 +39,21 @@
         background-clip: text;
         color: transparent;
       }
+      .cta { display: flex; justify-content: center; align-items: center; gap: 14px; margin: -4px 0 22px; }
+      .cta-button {
+        padding: 8px 22px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #6366f1, #a855f7);
+        box-shadow: 0 8px 20px -6px rgba(99, 102, 241, 0.55);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.15s, box-shadow 0.15s;
+      }
+      .cta-button:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -6px rgba(99, 102, 241, 0.65); }
+      .cta-login { color: #6366f1; font-size: 13px; text-decoration: none; }
+      .cta-login:hover { text-decoration: underline; }
       .stage { position: relative; }
       .card {
         padding: 22px 18px 16px;
@@ -478,6 +493,10 @@
         <button type="button" data-lang="en">EN</button>
       </div>
       <h1 data-i18n="title"></h1>
+      <div class="cta">
+        <a class="cta-button" href="/register" data-i18n="signUp"></a>
+        <a class="cta-login" href="/login" data-i18n="logIn"></a>
+      </div>
       <div class="stage" id="stage">
         <div class="card">
           <div class="rank" id="rank">
@@ -633,6 +652,8 @@
         zh: {
           pageTitle: "怎么用 Todo List",
           title: "30 秒看懂 Todo List",
+          signUp: "立即注册 →",
+          logIn: "已有账号？登录",
           replay: "重新播放",
           installTitle: "添加到手机主屏幕",
           steps: [
@@ -720,6 +741,8 @@
         en: {
           pageTitle: "How to use Todo List",
           title: "Todo List in 30 seconds",
+          signUp: "Sign up now →",
+          logIn: "Have an account? Log in",
           replay: "Replay",
           installTitle: "Add to your home screen",
           steps: [
