@@ -76,7 +76,7 @@ export async function getCurrentUser() {
 
   const session = await prisma.session.findUnique({
     where: { tokenHash: sha256(token) },
-    include: { user: { select: { id: true, email: true, role: true } } },
+    include: { user: { select: { id: true, email: true, role: true, points: true } } },
   });
   if (!session || session.expiresAt < new Date()) return null;
   return session.user;

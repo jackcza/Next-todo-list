@@ -1,6 +1,6 @@
 import type { Messages } from "@/lib/i18n";
-import type { Todo } from "@/lib/todo";
 
+/** A task scores while it has a completion time: undoing takes the points back, deleting a done task keeps them. */
 export const POINTS_PER_TASK = 10;
 export const POINTS_PER_STAR = 50;
 
@@ -37,11 +37,6 @@ export type Rank = {
   /** Next division or King title, null at the top. */
   next: string | null;
 };
-
-/** A task scores while it has a completion time: undoing takes the points back, deleting a done task keeps them. */
-export function countPoints(todos: Todo[]) {
-  return todos.filter((todo) => todo.doneAt).length * POINTS_PER_TASK;
-}
 
 export function getRank(points: number, names: Messages["rank"]): Rank {
   const totalStars = Math.floor(points / POINTS_PER_STAR);

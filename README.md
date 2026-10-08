@@ -203,6 +203,7 @@ Then log in at `/admin/login` to see user growth and tasks added per day for the
 | `npm run lint` | 代码检查 / Lint the code |
 | `npm run admin:grant -- <email>` | 设为管理员 / Grant admin access |
 | `npm run admin:revoke -- <email>` | 取消管理员 / Revoke admin access |
+| `npm run points:sync` | 按已完成任务重新计算所有用户的段位积分 / Recompute everyone's rank points from their completed tasks |
 
 ---
 

@@ -8,11 +8,13 @@ datasource db {
 }
 
 /// role: 'user' or 'admin'; admins are granted with `npm run admin:grant -- <email>`
+/// points: rank points, 10 per task that has a doneAt; kept in step by PATCH /api/todos/[id]
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
   passwordHash String
   role         String    @default("user")
+  points       Int       @default(0)
   createdAt    DateTime  @default(now())
   sessions     Session[]
   todos        Todo[]

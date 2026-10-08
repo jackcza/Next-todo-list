@@ -14,5 +14,5 @@ export default async function Home() {
     select: TODO_SELECT,
   });
 
-  return <TodoApp email={user.email} initialTodos={todos.map(toTodo)} />;
+  return <TodoApp email={user.email} initialTodos={todos.map(toTodo)} initialPoints={user.points} />;
 }

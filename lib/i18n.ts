@@ -271,6 +271,7 @@ const SERVER_ERRORS_ZH: Record<string, string> = {
   "Invalid date.": "日期无效。",
   "Nothing to update.": "没有需要更新的内容。",
   "Task not found.": "找不到该任务。",
+  "This task was just changed. Please try again.": "该任务刚刚被修改，请重试。",
   "Invalid task order.": "任务顺序无效。",
   "Task content cannot be empty.": "任务内容不能为空。",
   "This account does not have admin access.": "该账号没有管理员权限。",
