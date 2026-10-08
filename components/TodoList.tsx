@@ -126,6 +126,7 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
           <span className="todo-item-meta">{stamps.join(" · ")}</span>
         </div>
         <div className="todo-item-actions">
+          <span className="todo-item-dot" aria-hidden />
           {!isDeleted ? (
             // The tooltip wraps the popover (not the other way round) so the popover's click handlers
             // still reach the icon when HoverTooltip renders no tooltip on touch screens.
