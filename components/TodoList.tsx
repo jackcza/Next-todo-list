@@ -30,6 +30,7 @@ import { Button, Calendar, Empty, Popover, Skeleton } from "antd";
 import dayjs from "dayjs";
 import { useId, useState, type SyntheticEvent } from "react";
 import HoverTooltip from "@/components/HoverTooltip";
+import { burstCoins } from "@/lib/coinBurst";
 import { formatDay, formatStamp, toDateKey } from "@/lib/date";
 import { STATUS, type Todo } from "@/lib/todo";
 
@@ -152,7 +153,10 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
             ) : (
               <CheckCircleOutlined
                 className="todo-action todo-action-done"
-                onClick={() => onChangeStatus(item, STATUS.IS_DONE)}
+                onClick={(event) => {
+                  burstCoins(event.currentTarget);
+                  onChangeStatus(item, STATUS.IS_DONE);
+                }}
               />
             )}
           </HoverTooltip>
