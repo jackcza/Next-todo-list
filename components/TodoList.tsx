@@ -30,8 +30,9 @@ import { Button, Calendar, Empty, Popover, Skeleton } from "antd";
 import dayjs from "dayjs";
 import { useId, useState, type SyntheticEvent } from "react";
 import HoverTooltip from "@/components/HoverTooltip";
+import { useI18n } from "@/components/I18nProvider";
 import { burstCoins } from "@/lib/coinBurst";
-import { formatDay, formatStamp, toDateKey } from "@/lib/date";
+import { DAYJS_LOCALE, formatDay, formatStamp, toDateKey } from "@/lib/date";
 import { STATUS, type Todo } from "@/lib/todo";
 
 type TodoListProps = {
@@ -42,12 +43,6 @@ type TodoListProps = {
   onChangeStatus: (todo: Todo, status: string) => void;
   onReorder: (activeId: string, overId: string) => void;
   onMove: (todo: Todo, date: string) => void;
-};
-
-const EMPTY_TEXT: Record<string, string> = {
-  [STATUS.IS_CREATE]: "Nothing to do. Add a task above.",
-  [STATUS.IS_DONE]: "No completed tasks yet.",
-  [STATUS.IS_DELETE]: "Trash is empty.",
 };
 
 type TodoItemProps = {
@@ -66,12 +61,13 @@ const stopDrag = {
 function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
   const [pickerOpen, setPickerOpen] = useState(false);
+  const { t, locale } = useI18n();
   const isDone = item.status === STATUS.IS_DONE;
   const isDeleted = item.status === STATUS.IS_DELETE;
 
-  const stamps = [`Added ${formatStamp(item.createdAt, item.date)}`];
-  if (isDone && item.doneAt) stamps.push(`Done ${formatStamp(item.doneAt, item.date)}`);
-  if (isDeleted && item.deletedAt) stamps.push(`Deleted ${formatStamp(item.deletedAt, item.date)}`);
+  const stamps = [t.list.added(formatStamp(item.createdAt, item.date, t.date))];
+  if (isDone && item.doneAt) stamps.push(t.list.doneAt(formatStamp(item.doneAt, item.date, t.date)));
+  if (isDeleted && item.deletedAt) stamps.push(t.list.deletedAt(formatStamp(item.deletedAt, item.date, t.date)));
 
   const datePicker = (
     <div className="todo-date-picker" {...stopDrag}>
@@ -86,15 +82,17 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
               type="text"
               size="small"
               icon={<LeftOutlined />}
-              aria-label="Previous month"
+              aria-label={t.list.prevMonth}
               onClick={() => onChange(value.subtract(1, "month"))}
             />
-            <span className="todo-date-picker-title">{value.format("MMMM YYYY")}</span>
+            <span className="todo-date-picker-title">
+              {value.locale(DAYJS_LOCALE[locale]).format(t.date.month)}
+            </span>
             <Button
               type="text"
               size="small"
               icon={<RightOutlined />}
-              aria-label="Next month"
+              aria-label={t.list.nextMonth}
               onClick={() => onChange(value.add(1, "month"))}
             />
           </div>
@@ -116,7 +114,7 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
       className={`todo-container-list ${isDone ? "todo-container-list-done" : ""} ${
         isDragging ? "todo-container-list-dragging" : ""
       }`}
-      aria-label={`${item.content}, drag to reorder`}
+      aria-label={t.list.dragLabel(item.content)}
       {...attributes}
       {...listeners}
     >
@@ -131,7 +129,7 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
           {!isDeleted ? (
             // The tooltip wraps the popover (not the other way round) so the popover's click handlers
             // still reach the icon when HoverTooltip renders no tooltip on touch screens.
-            <HoverTooltip title="Move to another date">
+            <HoverTooltip title={t.list.moveDate}>
               <Popover
                 content={datePicker}
                 trigger="click"
@@ -144,7 +142,7 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
               </Popover>
             </HoverTooltip>
           ) : null}
-          <HoverTooltip title={isDone ? "Mark as active" : "Mark as done"}>
+          <HoverTooltip title={isDone ? t.list.markActive : t.list.markDone}>
             {isDone ? (
               <UndoOutlined
                 className="todo-action todo-action-undo"
@@ -161,7 +159,7 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
             )}
           </HoverTooltip>
           {!isDeleted ? (
-            <HoverTooltip title="Delete">
+            <HoverTooltip title={t.list.delete}>
               <DeleteOutlined
                 className="todo-action todo-action-delete"
                 onClick={() => onChangeStatus(item, STATUS.IS_DELETE)}
@@ -199,6 +197,12 @@ export default function TodoList({ todos, filter, today, onChangeStatus, onReord
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const { t, locale } = useI18n();
+  const emptyText: Record<string, string> = {
+    [STATUS.IS_CREATE]: t.list.emptyActive,
+    [STATUS.IS_DONE]: t.list.emptyDone,
+    [STATUS.IS_DELETE]: t.list.emptyDeleted,
+  };
 
   const showTodos = todos.filter((item) => item.status === filter);
 
@@ -209,7 +213,7 @@ export default function TodoList({ todos, filter, today, onChangeStatus, onReord
   if (showTodos.length === 0) {
     return (
       <div className="todo-container todo-container-empty">
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={EMPTY_TEXT[filter]} />
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={emptyText[filter]} />
       </div>
     );
   }
@@ -229,7 +233,7 @@ export default function TodoList({ todos, filter, today, onChangeStatus, onReord
         {groupByDate(showTodos, today).map(([date, items]) => {
           const isToday = date === today;
           const isOpen = isToday || (expanded[date] ?? false);
-          const { label, detail } = formatDay(date, today);
+          const { label, detail } = formatDay(date, today, t.date, locale);
           return (
             <section key={date} className="todo-group">
               <button

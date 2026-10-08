@@ -7,11 +7,15 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import InstallButton from "@/components/InstallButton";
+import LanguageSwitch from "@/components/LanguageSwitch";
+import RankBar from "@/components/RankBar";
 import TodoFilter from "@/components/TodoFilter";
 import TodoInput from "@/components/TodoInput";
 import TodoList from "@/components/TodoList";
-import { ApiError, errorMessage, requestJson } from "@/lib/api-client";
-import { toDateKey, useToday } from "@/lib/date";
+import { useI18n } from "@/components/I18nProvider";
+import { ApiError, requestJson } from "@/lib/api-client";
+import { DAYJS_LOCALE, toDateKey, useToday } from "@/lib/date";
+import { POINTS_PER_TASK, countPoints, getRank } from "@/lib/rank";
 import { STATUS, type Todo } from "@/lib/todo";
 
 type TodoAppProps = {
@@ -22,6 +26,7 @@ type TodoAppProps = {
 export default function TodoApp({ email, initialTodos }: TodoAppProps) {
   const router = useRouter();
   const { message } = App.useApp();
+  const { t, locale, errorText } = useI18n();
   const [todos, setTodos] = useState(initialTodos);
   const [filter, setFilter] = useState<string>(STATUS.IS_CREATE);
   const today = useToday();
@@ -36,7 +41,7 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
       goToLogin();
       return;
     }
-    message.error(errorMessage(error));
+    message.error(errorText(error));
   };
 
   const addTodo = async (content: string) => {
@@ -54,6 +59,14 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
     try {
       const updated = await requestJson<Todo>(`/api/todos/${todo.id}`, { method: "PATCH", body: { status } });
       setTodos((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      const before = getRank(countPoints(todos), t.rank);
+      const gained = (updated.doneAt ? POINTS_PER_TASK : 0) - (todo.doneAt ? POINTS_PER_TASK : 0);
+      const after = getRank(before.points + gained, t.rank);
+      if (after.name !== before.name && after.totalStars > before.totalStars) {
+        message.success(t.rank.promoted(after.name));
+      } else if (after.totalStars > before.totalStars) {
+        message.success(t.rank.starUp);
+      }
     } catch (error) {
       handleError(error);
     }
@@ -64,7 +77,7 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
       const updated = await requestJson<Todo>(`/api/todos/${todo.id}`, { method: "PATCH", body: { date } });
       // The server appends it to the end of the target day, so mirror that locally.
       setTodos((prev) => [...prev.filter((item) => item.id !== updated.id), updated]);
-      message.success(`Moved to ${dayjs(date).format("MMM D")}`);
+      message.success(t.app.movedTo(dayjs(date).locale(DAYJS_LOCALE[locale]).format(t.date.short)));
     } catch (error) {
       handleError(error);
     }
@@ -97,25 +110,32 @@ export default function TodoApp({ email, initialTodos }: TodoAppProps) {
   };
 
   const activeCount = todos.filter((item) => item.status === STATUS.IS_CREATE).length;
+  const rank = getRank(countPoints(todos), t.rank);
 
   return (
     <div className="todo-app">
+      <LanguageSwitch />
       <header className="todo-app-header">
-        <h2 className="todo-app-title">Todo List</h2>
-        <p className="todo-app-subtitle">
-          {activeCount} task{activeCount === 1 ? "" : "s"} left
-        </p>
+        <h2 className="todo-app-title">{t.app.title}</h2>
+        <p className="todo-app-subtitle">{t.app.tasksLeft(activeCount)}</p>
         <div className="todo-app-account">
           <span>{email}</span>
-          <Button size="small" type="text" icon={<QuestionCircleOutlined />} href="/guide.html" target="_blank">
-            Guide
+          <Button
+            size="small"
+            type="text"
+            icon={<QuestionCircleOutlined />}
+            href={`/guide.html?lang=${locale}`}
+            target="_blank"
+          >
+            {t.common.guide}
           </Button>
           <InstallButton />
           <Button size="small" type="text" icon={<LogoutOutlined />} onClick={logout}>
-            Log out
+            {t.common.logOut}
           </Button>
         </div>
       </header>
+      <RankBar rank={rank} />
       <TodoInput onSubmit={addTodo} />
       <TodoFilter filter={filter} setFilter={setFilter} todos={todos} />
       <TodoList

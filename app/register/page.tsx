@@ -5,9 +5,11 @@ import { App, Button, Form, Input } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useI18n } from "@/components/I18nProvider";
+import LanguageSwitch from "@/components/LanguageSwitch";
 import NewPasswordFields from "@/components/NewPasswordFields";
 import VerificationCodeField from "@/components/VerificationCodeField";
-import { errorMessage, requestJson } from "@/lib/api-client";
+import { requestJson } from "@/lib/api-client";
 
 type RegisterValues = {
   email: string;
@@ -19,6 +21,7 @@ type RegisterValues = {
 export default function RegisterPage() {
   const router = useRouter();
   const { message } = App.useApp();
+  const { t, errorText } = useI18n();
   const [form] = Form.useForm<RegisterValues>();
   const [loading, setLoading] = useState(false);
 
@@ -29,33 +32,34 @@ export default function RegisterPage() {
       router.replace("/");
       router.refresh();
     } catch (error) {
-      message.error(errorMessage(error));
+      message.error(errorText(error));
       setLoading(false);
     }
   };
 
   return (
     <div className="todo-app auth-card">
+      <LanguageSwitch />
       <header className="todo-app-header">
-        <h2 className="todo-app-title">Sign up</h2>
-        <p className="todo-app-subtitle">Create an account to keep your tasks</p>
+        <h2 className="todo-app-title">{t.common.signUp}</h2>
+        <p className="todo-app-subtitle">{t.auth.registerSubtitle}</p>
       </header>
       <Form<RegisterValues> form={form} layout="vertical" requiredMark={false} onFinish={onFinish}>
         <Form.Item
           name="email"
-          label="Email"
-          rules={[{ required: true, type: "email", message: "Please enter a valid email address." }]}
+          label={t.common.email}
+          rules={[{ required: true, type: "email", message: t.common.invalidEmail }]}
         >
           <Input size="large" prefix={<MailOutlined />} autoComplete="email" />
         </Form.Item>
         <VerificationCodeField form={form} purpose="register" />
         <NewPasswordFields />
         <Button type="primary" htmlType="submit" size="large" block loading={loading}>
-          Create account
+          {t.auth.createAccount}
         </Button>
       </Form>
       <p className="auth-switch">
-        Already have an account? <Link href="/login">Log in</Link>
+        {t.auth.haveAccount} <Link href="/login">{t.common.logIn}</Link>
       </p>
     </div>
   );

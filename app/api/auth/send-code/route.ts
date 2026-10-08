@@ -1,7 +1,9 @@
+import { cookies } from "next/headers";
 import { CODE_MINUTES, generateCode, hashCode, normalizeEmail } from "@/lib/auth";
 import { RESEND_SECONDS, isCodePurpose } from "@/lib/constants";
 import { prisma } from "@/lib/db";
 import { jsonError, readJson } from "@/lib/http";
+import { LOCALE_COOKIE, detectLocale } from "@/lib/i18n";
 import { sendVerificationCode } from "@/lib/mail";
 import { getClientIp, hitRateLimits, tooManyRequests } from "@/lib/rate-limit";
 
@@ -54,8 +56,9 @@ export async function POST(request: Request) {
     createdAt: new Date(),
   };
   await prisma.emailCode.upsert({ where: { email }, create: { email, ...data }, update: data });
+  const locale = detectLocale((await cookies()).get(LOCALE_COOKIE)?.value, request.headers.get("accept-language"));
   try {
-    await sendVerificationCode(email, code, purpose);
+    await sendVerificationCode(email, code, purpose, locale);
   } catch (error) {
     console.error("Failed to send verification email", error);
     await prisma.emailCode.delete({ where: { email } });

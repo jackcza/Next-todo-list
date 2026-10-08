@@ -3,6 +3,7 @@
 import { DownloadOutlined } from "@ant-design/icons";
 import { Button, Popover } from "antd";
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { useI18n } from "@/components/I18nProvider";
 
 /** Chromium-only event; not in the DOM lib types. */
 type BeforeInstallPromptEvent = Event & {
@@ -22,6 +23,7 @@ function isIosBrowser() {
 
 /** Shows an install button when the browser can install the app, or Add to Home Screen steps on iOS Safari. */
 export default function InstallButton() {
+  const { t } = useI18n();
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const showIosHint = useSyncExternalStore(noopSubscribe, isIosBrowser, () => false);
 
@@ -48,7 +50,7 @@ export default function InstallButton() {
     };
     return (
       <Button size="small" type="text" icon={<DownloadOutlined />} onClick={install}>
-        Install app
+        {t.install.button}
       </Button>
     );
   }
@@ -60,12 +62,16 @@ export default function InstallButton() {
         placement="bottom"
         content={
           <span className="install-hint">
-            Tap the <b>Share</b> button in Safari, then choose <b>Add to Home Screen</b>.
+            {t.install.hintPre}
+            <b>{t.install.hintShare}</b>
+            {t.install.hintMid}
+            <b>{t.install.hintAdd}</b>
+            {t.install.hintPost}
           </span>
         }
       >
         <Button size="small" type="text" icon={<DownloadOutlined />}>
-          Install app
+          {t.install.button}
         </Button>
       </Popover>
     );

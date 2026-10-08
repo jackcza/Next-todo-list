@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { cookies, headers } from "next/headers";
 import Providers from "@/components/Providers";
+import { HTML_LANG, LOCALE_COOKIE, detectLocale } from "@/lib/i18n";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,12 +24,15 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const [cookieStore, headerList] = await Promise.all([cookies(), headers()]);
+  const locale = detectLocale(cookieStore.get(LOCALE_COOKIE)?.value, headerList.get("accept-language"));
+
   return (
-    <html lang="en">
+    <html lang={HTML_LANG[locale]}>
       <body>
         <AntdRegistry>
-          <Providers>{children}</Providers>
+          <Providers locale={locale}>{children}</Providers>
         </AntdRegistry>
       </body>
     </html>
