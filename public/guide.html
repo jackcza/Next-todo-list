@@ -142,8 +142,94 @@
       .body strong { display: block; font-size: 14px; font-weight: 500; }
       .body span { font-size: 11px; color: #94a3b8; }
       .done strong { color: #94a3b8; text-decoration: line-through; }
-      .icons { display: flex; gap: 10px; color: #94a3b8; font-size: 15px; }
+      .icons { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 15px; }
       .icon.hot { color: #6366f1; }
+      .dot {
+        flex-shrink: 0;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--dot);
+        box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+      }
+      .list li:nth-child(7n + 1) { --dot: #ff0000; }
+      .list li:nth-child(7n + 2) { --dot: #ff7f00; }
+      .list li:nth-child(7n + 3) { --dot: #ffff00; }
+      .list li:nth-child(7n + 4) { --dot: #7fff00; }
+      .list li:nth-child(7n + 5) { --dot: #007fff; }
+      .list li:nth-child(7n + 6) { --dot: #0000ff; }
+      .list li:nth-child(7n + 7) { --dot: #7f00ff; }
+      .list li.compact { padding: 7px 12px; }
+      .list li.compact .body span { display: none; }
+      .rank {
+        margin-bottom: 14px;
+        padding: 10px 12px 8px;
+        border: 1px solid #eef0f5;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #fff 0%, #fafaff 100%);
+      }
+      .rank-head { display: flex; align-items: center; gap: 6px; }
+      .rank-head svg { width: 16px; height: 16px; color: var(--rank-color); transition: color 0.3s; }
+      .rank-name { font-size: 14px; font-weight: 700; color: var(--rank-color); transition: color 0.3s; }
+      .rank-stars { margin-left: auto; color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
+      .rank-stars .off { color: #e2e8f0; }
+      .bar { height: 6px; margin: 6px 0 4px; border-radius: 3px; background: #f1f5f9; overflow: hidden; }
+      .bar i { display: block; height: 100%; border-radius: 3px; background: var(--rank-color); transition: width 0.6s ease, background 0.3s; }
+      .bar.reset i { transition: none; }
+      .rank-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; font-size: 11px; color: #94a3b8; }
+      .toast {
+        position: absolute;
+        z-index: 4;
+        top: -14px;
+        left: 50%;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+        font-size: 13px;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translate(-50%, -8px);
+        transition: opacity 0.25s, transform 0.25s;
+        pointer-events: none;
+      }
+      .toast.show { opacity: 1; transform: translate(-50%, 0); }
+      .coin-burst { position: fixed; z-index: 10; width: 0; height: 0; pointer-events: none; }
+      .coin {
+        position: absolute;
+        width: 18px;
+        height: 18px;
+        margin: -9px 0 0 -9px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fffbeb 0 12%, #fde047 35%, #f59e0b 75%, #b45309 100%);
+        box-shadow: inset 0 0 0 1.5px #d97706, 0 2px 4px rgba(120, 53, 15, 0.3);
+      }
+      .coin::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border: 1.5px solid rgba(180, 83, 9, 0.55);
+        border-radius: 50%;
+      }
+      .rules {
+        padding: 16px;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 20px 50px -12px rgba(79, 70, 229, 0.12);
+      }
+      .rules p { margin: 0 0 12px; text-align: center; font-size: 13px; line-height: 1.7; color: #475569; }
+      .tier {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 7px 4px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13px;
+      }
+      .tier b { color: var(--tier); }
+      .tier span { font-size: 12px; color: #94a3b8; }
+      .kings { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 12px; }
+      .kings span { padding: 3px 9px; border-radius: 999px; background: #fef2f2; color: #dc2626; font-size: 12px; }
       .popover {
         position: absolute;
         z-index: 2;
@@ -394,19 +480,31 @@
       <h1 data-i18n="title"></h1>
       <div class="stage" id="stage">
         <div class="card">
+          <div class="rank" id="rank">
+            <div class="rank-head">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M7 3h10v2h4v3a5 5 0 0 1-4.6 5A5 5 0 0 1 13 15.9V19h3v2H8v-2h3v-3.1A5 5 0 0 1 7.6 13 5 5 0 0 1 3 8V5h4V3Zm0 4H5v1a3 3 0 0 0 2 2.8V7Zm10 0v3.8A3 3 0 0 0 19 8V7h-2Z" />
+              </svg>
+              <span class="rank-name" id="rankName"></span>
+              <span class="rank-stars" id="rankStars"></span>
+            </div>
+            <div class="bar" id="rankBar"><i></i></div>
+            <div class="rank-foot" id="rankFoot"></div>
+          </div>
           <div class="input-row">
-            <input id="task" placeholder="What needs to be done?" readonly />
-            <button id="add" type="button" disabled>+ Add</button>
+            <input id="task" readonly />
+            <button id="add" type="button" disabled></button>
           </div>
           <div class="tabs" id="tabs">
-            <button type="button" class="on" data-tab="0">Active (0)</button>
-            <button type="button" data-tab="1">Done (0)</button>
-            <button type="button" data-tab="2">Deleted (0)</button>
+            <button type="button" class="on"></button>
+            <button type="button"></button>
+            <button type="button"></button>
           </div>
           <div id="groups"></div>
         </div>
+        <div class="toast" id="toast"></div>
         <div class="popover" id="popover">
-          <header>October 2026</header>
+          <header id="month"></header>
           <div class="grid" id="grid"></div>
         </div>
         <div class="cursor" id="cursor"></div>
@@ -416,6 +514,16 @@
         <p id="caption"></p>
         <div class="controls"><button type="button" id="replay" data-i18n="replay"></button></div>
       </div>
+      <p class="note" data-i18n="langNote"></p>
+
+      <section class="section">
+        <h2 data-i18n="rulesTitle"></h2>
+        <div class="rules">
+          <p data-i18n-html="rulesText"></p>
+          <div id="tiers"></div>
+          <div class="kings" id="kings"></div>
+        </div>
+      </section>
 
       <section class="section">
         <h2 data-i18n="installTitle"></h2>
@@ -435,9 +543,9 @@
               <div class="page">
                 <div class="mini-title">Todo List</div>
                 <div class="mini-input"></div>
-                <div class="mini-row"><i></i><span>Read a book</span></div>
-                <div class="mini-row"><i></i><span>Buy milk</span></div>
-                <div class="mini-row"><i></i><span>Call dentist</span></div>
+                <div class="mini-row"><i></i><span data-i18n="mini1"></span></div>
+                <div class="mini-row"><i></i><span data-i18n="mini2"></span></div>
+                <div class="mini-row"><i></i><span data-i18n="mini3"></span></div>
               </div>
               <div class="toolbar" id="toolbar">
                 <span>‹</span>
@@ -503,9 +611,9 @@
               <div class="page">
                 <div class="mini-title">Todo List</div>
                 <div class="mini-input"></div>
-                <div class="mini-row"><i></i><span>Read a book</span></div>
-                <div class="mini-row"><i></i><span>Buy milk</span></div>
-                <div class="mini-row"><i></i><span>Call dentist</span></div>
+                <div class="mini-row"><i></i><span data-i18n="mini1"></span></div>
+                <div class="mini-row"><i></i><span data-i18n="mini2"></span></div>
+                <div class="mini-row"><i></i><span data-i18n="mini3"></span></div>
               </div>
             </div>
           </div>
@@ -528,12 +636,51 @@
           replay: "重新播放",
           installTitle: "添加到手机主屏幕",
           steps: [
-            "在输入框写下任务，点 Add，它会归到今天",
-            "点对勾标记完成；在 Done 里点撤销可以改回来",
-            "按住左侧 ⋮⋮ 拖动，调整同一天里的顺序",
+            "在输入框写下任务，点「添加」，它会归到今天",
+            "点对勾完成任务，爆出金币 +10 分；每 50 分一颗星，星星攒满就晋级",
+            "在「已完成」里点撤销可以改回来，积分也会扣回",
+            "按住任务任意位置拖动，调整同一天里的顺序（手机上长按一下再拖）",
+            "日历左边的圆点按当天顺序显示红橙黄绿蓝靛紫，第 8 个起重新循环",
             "点日历图标，把任务挪到别的日期",
             "今天以外的日期默认收起，点标题可以展开",
           ],
+          ui: {
+            placeholder: "要做点什么？",
+            add: "添加",
+            tabs: ["进行中", "已完成", "已删除"],
+            today: "今天",
+            yesterday: "昨天",
+            tomorrow: "明天",
+            day: (d) => `10月${d}日`,
+            added: (time) => `添加于 ${time}`,
+            done: (time) => `完成于 ${time}`,
+            month: "2026年10月",
+            weekdays: ["一", "二", "三", "四", "五", "六", "日"],
+            firstDayOffset: 3,
+            tasks: {
+              book: "读一本书",
+              milk: "买牛奶",
+              dentist: "预约牙医",
+              report: "写周报",
+              bike: "修自行车",
+              rainbow: ["晨跑", "回邮件", "开周会", "写周报", "买菜", "做晚饭", "读书", "早点睡"],
+            },
+          },
+          rank: {
+            tiers: ["倔强青铜", "秩序白银", "荣耀黄金", "尊贵铂金", "永恒钻石", "至尊星耀"],
+            kings: ["最强王者", "非凡王者", "无双王者", "绝世王者", "至圣王者", "荣耀王者", "传奇王者"],
+            toNextStar: (tasks, points) => `再完成 ${tasks} 个任务升星 · ${points} 分`,
+            next: (name) => `下一段位：${name}`,
+            promoted: (name) => `晋级 ${name}！`,
+            tierInfo: (divisions, stars) => `${divisions} 个小段 · 每段 ${stars} 星`,
+            kingFrom: (from) => `${from} 星起`,
+          },
+          langNote: "应用右上角可以切换中文 / EN，默认跟随系统语言",
+          rulesTitle: "段位规则",
+          rulesText: "每完成 1 个任务得 <b>10 分</b>，每 <b>50 分</b>得 1 颗星。<br />撤销完成会扣回积分，删除已完成的任务不扣分。",
+          mini1: "读一本书",
+          mini2: "买牛奶",
+          mini3: "预约牙医",
           installSteps: {
             ios: [
               "用 Safari 打开应用，点底部的分享按钮（新版 iOS 先点地址栏的 ⋯，再点分享）",
@@ -577,11 +724,50 @@
           installTitle: "Add to your home screen",
           steps: [
             "Type a task and tap Add — it goes under Today",
-            "Tap the check to mark it done; tap undo in Done to bring it back",
-            "Hold the ⋮⋮ handle and drag to reorder tasks within a day",
+            "Tap the check to finish a task: coins burst out, +10 points. Every 50 points is a star; fill the stars to rank up",
+            "Tap undo in Done to bring it back — the points are taken back too",
+            "Hold anywhere on a task and drag to reorder within a day (on phones, press briefly first)",
+            "The dot by the calendar follows the day's order in rainbow colors, starting over from the 8th task",
             "Tap the calendar icon to move a task to another date",
             "Days other than today start collapsed — tap the header to expand",
           ],
+          ui: {
+            placeholder: "What needs to be done?",
+            add: "Add",
+            tabs: ["Active", "Done", "Deleted"],
+            today: "Today",
+            yesterday: "Yesterday",
+            tomorrow: "Tomorrow",
+            day: (d) => `Oct ${d}`,
+            added: (time) => `Added ${time}`,
+            done: (time) => `Done ${time}`,
+            month: "October 2026",
+            weekdays: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+            firstDayOffset: 4,
+            tasks: {
+              book: "Read a book",
+              milk: "Buy milk",
+              dentist: "Call dentist",
+              report: "Write report",
+              bike: "Fix bike",
+              rainbow: ["Morning run", "Reply to emails", "Team meeting", "Write report", "Buy groceries", "Cook dinner", "Read", "Sleep early"],
+            },
+          },
+          rank: {
+            tiers: ["Bronze", "Silver", "Gold", "Platinum", "Diamond", "Starshine"],
+            kings: ["Supreme King", "Extraordinary King", "Peerless King", "Unrivaled King", "Sacred King", "Glorious King", "Legendary King"],
+            toNextStar: (tasks, points) => `${tasks} more task${tasks === 1 ? "" : "s"} to the next star · ${points} pts`,
+            next: (name) => `Next: ${name}`,
+            promoted: (name) => `Promoted to ${name}!`,
+            tierInfo: (divisions, stars) => `${divisions} divisions · ${stars} stars each`,
+            kingFrom: (from) => `${from}★+`,
+          },
+          langNote: "Switch between 中文 and EN in the top-right corner of the app; it follows your system language by default",
+          rulesTitle: "Rank rules",
+          rulesText: "Each finished task earns <b>10 points</b>, and every <b>50 points</b> is a star.<br />Undoing a task takes its points back; deleting a done task keeps them.",
+          mini1: "Read a book",
+          mini2: "Buy milk",
+          mini3: "Call dentist",
           installSteps: {
             ios: [
               "Open the app in Safari and tap Share at the bottom (on newer iOS, tap ⋯ in the address bar first)",
@@ -626,6 +812,7 @@
 
       let token = 0;
       let step = 0;
+      let lastTabs = [0, [0, 0, 0]];
 
       $("dots").innerHTML = t().steps.map(() => "<i></i>").join("");
 
@@ -636,10 +823,10 @@
       }
 
       function tabs(active, counts) {
+        lastTabs = [active, counts];
         [...$("tabs").children].forEach((button, i) => {
           button.classList.toggle("on", i === active);
-          const name = ["Active", "Done", "Deleted"][i];
-          button.textContent = `${name} (${counts[i]})`;
+          button.textContent = `${t().ui.tabs[i]} (${counts[i]})`;
         });
       }
 
@@ -647,8 +834,136 @@
         return `<li class="${options.done ? "done" : ""} ${options.cls || ""}" ${options.id ? `id="${options.id}"` : ""}>
           <span class="handle">⋮⋮</span>
           <div class="body"><strong>${text}</strong><span>${meta}</span></div>
-          <span class="icons">${options.icons || "📅 ✓ 🗑"}</span>
+          <span class="icons"><span class="dot"></span><span class="acts">${options.icons || "📅 ✓ 🗑"}</span></span>
         </li>`;
+      }
+
+      // Same ladder as lib/rank.ts: 10 points a task, 50 points a star.
+      const TIERS = [
+        { divisions: 3, stars: 3, color: "#b45309" },
+        { divisions: 3, stars: 3, color: "#64748b" },
+        { divisions: 4, stars: 4, color: "#d97706" },
+        { divisions: 4, stars: 4, color: "#0d9488" },
+        { divisions: 5, stars: 5, color: "#4f46e5" },
+        { divisions: 5, stars: 5, color: "#9333ea" },
+      ];
+      const KING_FROM = [0, 10, 20, 30, 40, 50, 100];
+      const KING_COLOR = "#dc2626";
+      const ROMAN = ["I", "II", "III", "IV", "V"];
+      const DEMO_POINTS = 890;
+      let points = DEMO_POINTS;
+
+      function getRank(value) {
+        const names = t().rank;
+        const totalStars = Math.floor(value / 50);
+        const fraction = (value % 50) / 50;
+        const ladder = TIERS.flatMap((tier, tierIndex) =>
+          Array.from({ length: tier.divisions }, (_, i) => ({
+            name: `${names.tiers[tierIndex]} ${ROMAN[tier.divisions - 1 - i]}`,
+            color: tier.color,
+            stars: tier.stars,
+          })),
+        );
+        let remaining = totalStars;
+        for (const [index, division] of ladder.entries()) {
+          if (remaining < division.stars) {
+            return {
+              name: division.name,
+              color: division.color,
+              stars: remaining,
+              maxStars: division.stars,
+              progress: (remaining + fraction) / division.stars,
+              next: ladder[index + 1]?.name ?? names.kings[0],
+              toNext: 50 - (value % 50),
+            };
+          }
+          remaining -= division.stars;
+        }
+        const title = KING_FROM.findLastIndex((from) => remaining >= from);
+        const nextFrom = KING_FROM[title + 1];
+        return {
+          name: names.kings[title],
+          color: KING_COLOR,
+          stars: remaining,
+          maxStars: null,
+          progress: nextFrom === undefined ? fraction : (remaining - KING_FROM[title] + fraction) / (nextFrom - KING_FROM[title]),
+          next: names.kings[title + 1] ?? null,
+          toNext: 50 - (value % 50),
+        };
+      }
+
+      function renderRank(progressOverride) {
+        const rank = getRank(points);
+        $("rank").style.setProperty("--rank-color", rank.color);
+        $("rankName").textContent = rank.name;
+        $("rankStars").innerHTML =
+          rank.maxStars === null
+            ? `★ × ${rank.stars}`
+            : Array.from({ length: rank.maxStars }, (_, i) => `<span class="${i < rank.stars ? "" : "off"}">★</span>`).join("");
+        $("rankBar").firstElementChild.style.width = `${Math.round((progressOverride ?? rank.progress) * 100)}%`;
+        $("rankFoot").innerHTML =
+          `<span>${t().rank.toNextStar(Math.ceil(rank.toNext / 10), points)}</span>` + (rank.next ? `<span>${t().rank.next(rank.next)}</span>` : "");
+        return rank;
+      }
+
+      /** Jumps the progress bar without animating, e.g. from full back to empty after a promotion. */
+      function resetBar() {
+        $("rankBar").classList.add("reset");
+        renderRank();
+        $("rankBar").offsetWidth;
+        $("rankBar").classList.remove("reset");
+      }
+
+      let toastTimer;
+      function toast(text) {
+        $("toast").textContent = text;
+        $("toast").classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
+      }
+
+      // Same burst as lib/coinBurst.ts.
+      function burstCoins(origin) {
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const count = reduced ? 5 : 14;
+        const reach = reduced ? 0.45 : 1;
+        const box = origin.getBoundingClientRect();
+        const layer = document.createElement("div");
+        layer.className = "coin-burst";
+        layer.style.left = `${box.left + box.width / 2}px`;
+        layer.style.top = `${box.top + box.height / 2}px`;
+        document.body.append(layer);
+        const animations = Array.from({ length: count }, () => {
+          const coin = document.createElement("span");
+          coin.className = "coin";
+          layer.append(coin);
+          const angle = ((-90 + (Math.random() - 0.5) * 110) * Math.PI) / 180;
+          const speed = (480 + Math.random() * 300) * Math.sqrt(reach);
+          const spin = reduced ? 0 : (720 + Math.random() * 720) * (Math.random() < 0.5 ? -1 : 1);
+          const size = 0.75 + Math.random() * 0.45;
+          const duration = 900 + Math.random() * 400;
+          const keyframes = Array.from({ length: 13 }, (_, i) => {
+            const p = i / 12;
+            const s = (p * duration) / 1000;
+            const x = Math.cos(angle) * speed * s;
+            const y = Math.sin(angle) * speed * s + (1400 * reach * s * s) / 2;
+            return {
+              offset: p,
+              opacity: p < 0.7 ? 1 : 1 - (p - 0.7) / 0.3,
+              transform: `translate(${x}px, ${y}px) rotateY(${spin * p}deg) scale(${size * Math.min(1, 0.3 + p * 5)})`,
+            };
+          });
+          return coin.animate(keyframes, { duration, easing: "linear", fill: "forwards" });
+        });
+        Promise.all(animations.map((animation) => animation.finished)).finally(() => layer.remove());
+      }
+
+      function renderRules() {
+        const names = t().rank;
+        $("tiers").innerHTML = TIERS.map(
+          (tier, i) => `<div class="tier" style="--tier: ${tier.color}"><b>${names.tiers[i]}</b><span>${names.tierInfo(tier.divisions, tier.stars)}</span></div>`,
+        ).join("");
+        $("kings").innerHTML = names.kings.map((name, i) => `<span>${name} · ${names.kingFrom(KING_FROM[i])}</span>`).join("");
       }
 
       function group(label, detail, count, items, options = {}) {
@@ -679,57 +994,95 @@
 
       async function sceneAdd() {
         caption(0);
+        const ui = t().ui;
+        points = DEMO_POINTS;
+        resetBar();
         $("task").value = "";
         $("add").disabled = true;
         $("popover").classList.remove("show");
         tabs(0, [0, 0, 0]);
-        $("groups").innerHTML = group("Today", "Oct 7", 0, "");
+        $("groups").innerHTML = group(ui.today, ui.day(7), 0, "");
         pointAt($("task"));
         await sleep(500);
-        for (const char of "Read a book") {
+        for (const char of ui.tasks.book) {
           $("task").value += char;
           $("add").disabled = false;
-          await sleep(70);
+          await sleep(90);
         }
         await tap($("add"));
         $("task").value = "";
         $("add").disabled = true;
         tabs(0, [1, 0, 0]);
-        $("groups").innerHTML = group("Today", "Oct 7", 1, task("Read a book", "Added 14:06"));
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(ui.tasks.book, ui.added("14:06")));
         await sleep(1100);
       }
 
       async function sceneDone() {
         caption(1);
+        const ui = t().ui;
         const item = $("groups").querySelector("li");
-        const check = item.querySelector(".icons");
-        check.innerHTML = '📅 <span class="icon hot" id="check">✓</span> 🗑';
+        item.querySelector(".acts").innerHTML = '📅 <span class="icon hot" id="check">✓</span> 🗑';
         await tap($("check"));
+        burstCoins($("check"));
         item.classList.add("done");
-        await sleep(700);
+        const before = getRank(points);
+        points += 10;
+        const after = getRank(points);
+        if (after.name !== before.name) {
+          renderRank(1);
+          await sleep(650);
+          resetBar();
+          toast(t().rank.promoted(after.name));
+        } else {
+          renderRank();
+        }
+        await sleep(1500);
         tabs(1, [0, 1, 0]);
-        $("groups").innerHTML = group("Today", "Oct 7", 1, task("Read a book", "Added 14:06 · Done 14:07", { done: true, icons: '📅 <span id="undo">↩</span>' }));
-        await sleep(900);
+        $("groups").innerHTML = group(
+          ui.today,
+          ui.day(7),
+          1,
+          task(ui.tasks.book, `${ui.added("14:06")} · ${ui.done("14:07")}`, { done: true, icons: '📅 <span id="undo">↩</span>' }),
+        );
+        await sleep(1000);
+      }
+
+      async function sceneUndo() {
+        caption(2);
+        const ui = t().ui;
         await tap($("undo"));
-        await sleep(600);
+        points -= 10;
+        resetBar();
+        tabs(0, [1, 0, 0]);
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(ui.tasks.book, ui.added("14:06")));
+        await sleep(1600);
       }
 
       async function sceneDrag() {
-        caption(2);
+        caption(3);
+        const ui = t().ui;
         tabs(0, [2, 0, 0]);
         $("groups").innerHTML = group(
-          "Today",
-          "Oct 7",
+          ui.today,
+          ui.day(7),
           2,
-          task("Buy milk", "Added 09:30", { id: "a" }) + task("Call dentist", "Added 11:10", { id: "b" }),
+          task(ui.tasks.milk, ui.added("09:30"), { id: "a" }) + task(ui.tasks.dentist, ui.added("11:10"), { id: "b" }),
         );
         await sleep(400);
-        await tap($("b").querySelector(".handle"));
+        const grip = $("b").querySelector(".body");
+        const cursor = $("cursor");
+        pointAt(grip);
+        await sleep(600);
+        cursor.classList.add("down");
+        await sleep(450);
+        const shift = $("b").offsetHeight;
         $("b").classList.add("dragging");
-        $("b").style.transform = "translateY(-52px)";
+        $("b").style.transform = `translateY(-${shift}px)`;
+        cursor.style.transform = cursor.style.transform.replace(/,\s*([\d.-]+)px\)/, (_, y) => `, ${y - shift}px)`);
         await sleep(700);
-        $("a").style.transform = "translateY(52px)";
+        $("a").style.transform = `translateY(${shift}px)`;
         await sleep(500);
+        cursor.classList.remove("down");
         $("b").classList.remove("dragging");
         $("b").style.transform = "";
         $("a").style.transform = "";
@@ -737,14 +1090,30 @@
         await sleep(900);
       }
 
+      async function sceneRainbow() {
+        caption(4);
+        const ui = t().ui;
+        const names = ui.tasks.rainbow;
+        $("cursor").style.transform = "translate(-40px, -40px)";
+        let items = "";
+        for (const [i, name] of names.entries()) {
+          items += task(name, "", { cls: "compact" });
+          tabs(0, [i + 1, 0, 0]);
+          $("groups").innerHTML = group(ui.today, ui.day(7), i + 1, items);
+          await sleep(260);
+        }
+        await sleep(2200);
+      }
+
       async function sceneMove() {
-        caption(3);
+        caption(5);
+        const ui = t().ui;
         tabs(0, [1, 0, 0]);
-        $("groups").innerHTML = group("Today", "Oct 7", 1, task("Buy milk", "Added 09:30", { icons: '<span id="cal">📅</span> ✓ 🗑' }));
-        const days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-        const cells = [...Array(4).fill(""), ...Array.from({ length: 31 }, (_, i) => i + 1)];
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(ui.tasks.milk, ui.added("09:30"), { icons: '<span id="cal">📅</span> ✓ 🗑' }));
+        $("month").textContent = ui.month;
+        const cells = [...Array(ui.firstDayOffset).fill(""), ...Array.from({ length: 31 }, (_, i) => i + 1)];
         $("grid").innerHTML =
-          days.map((day) => `<i>${day}</i>`).join("") +
+          ui.weekdays.map((day) => `<i>${day}</i>`).join("") +
           cells.map((day) => (day ? `<b ${day === 8 ? 'class="pick" id="day8"' : ""}>${day}</b>` : "<b></b>")).join("");
         await sleep(300);
         await tap($("cal"));
@@ -758,22 +1127,20 @@
         await tap($("day8"));
         pop.classList.remove("show");
         tabs(0, [1, 0, 0]);
-        $("groups").innerHTML = group("Tomorrow", "Oct 8", 1, task("Buy milk", "Added Oct 7 09:30"));
+        $("groups").innerHTML = group(ui.tomorrow, ui.day(8), 1, task(ui.tasks.milk, ui.added(`${ui.day(7)} 09:30`)));
         await sleep(1200);
       }
 
       async function sceneFold() {
-        caption(4);
+        caption(6);
+        const ui = t().ui;
         tabs(0, [3, 0, 0]);
-        const yesterday = task("Call dentist", "Added 15:00") + task("Fix bike", "Added 18:45");
-        $("groups").innerHTML =
-          group("Today", "Oct 7", 1, task("Write report", "Added 09:30")) +
-          group("Yesterday", "Oct 6", 2, "", { arrow: true, open: false, id: "y" });
+        const today = group(ui.today, ui.day(7), 1, task(ui.tasks.report, ui.added("09:30")));
+        const yesterday = task(ui.tasks.dentist, ui.added("15:00")) + task(ui.tasks.bike, ui.added("18:45"));
+        $("groups").innerHTML = today + group(ui.yesterday, ui.day(6), 2, "", { arrow: true, open: false, id: "y" });
         await sleep(600);
         await tap($("y"));
-        $("groups").innerHTML =
-          group("Today", "Oct 7", 1, task("Write report", "Added 09:30")) +
-          group("Yesterday", "Oct 6", 2, yesterday, { arrow: true, id: "y" });
+        $("groups").innerHTML = today + group(ui.yesterday, ui.day(6), 2, yesterday, { arrow: true, id: "y" });
         await sleep(1400);
       }
 
@@ -784,7 +1151,11 @@
           if (run !== token) return;
           await sceneDone();
           if (run !== token) return;
+          await sceneUndo();
+          if (run !== token) return;
           await sceneDrag();
+          if (run !== token) return;
+          await sceneRainbow();
           if (run !== token) return;
           await sceneMove();
           if (run !== token) return;
@@ -886,6 +1257,11 @@
         document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t()[el.dataset.i18n]));
         document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = t()[el.dataset.i18nHtml]));
         [...$("lang").children].forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
+        $("task").placeholder = t().ui.placeholder;
+        $("add").textContent = `+ ${t().ui.add}`;
+        tabs(...lastTabs);
+        renderRank();
+        renderRules();
         caption(step);
         installCaption(installStep);
       }
