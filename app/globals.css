@@ -113,6 +113,20 @@ body {
   color: #94a3b8;
 }
 
+.todo-app-tip {
+  margin: -6px 0 16px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.todo-app-tip .anticon {
+  color: #f59e0b;
+}
+
 .todo-app-input {
   display: flex;
   gap: 10px;

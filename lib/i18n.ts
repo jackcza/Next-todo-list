@@ -34,6 +34,7 @@ const en = {
     movedTo: (date: string) => `Moved to ${date}`,
     placeholder: "What needs to be done?",
     add: "Add",
+    tip: "Do what's important and urgent first, then what's important but not urgent, and keep the unimportant to a minimum.",
   },
   filter: {
     active: (n: number) => `Active (${n})`,
@@ -157,6 +158,7 @@ const zh: Messages = {
     movedTo: (date) => `已移到 ${date}`,
     placeholder: "要做点什么？",
     add: "添加",
+    tip: "先做重要且紧急的事，再做重要但不紧急的事，尽量减少不重要的事。",
   },
   filter: {
     active: (n) => `进行中 (${n})`,

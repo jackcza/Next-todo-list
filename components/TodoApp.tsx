@@ -1,6 +1,6 @@
 "use client";
 
-import { LogoutOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { BulbOutlined, LogoutOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import { App, Button } from "antd";
 import dayjs from "dayjs";
@@ -143,6 +143,9 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
         </div>
       </header>
       <RankBar rank={rank} />
+      <p className="todo-app-tip">
+        <BulbOutlined /> {t.app.tip}
+      </p>
       <TodoInput onSubmit={addTodo} />
       <TodoFilter filter={filter} setFilter={setFilter} todos={todos} />
       <TodoList
