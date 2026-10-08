@@ -12,7 +12,8 @@ import {
 import {
   DndContext,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -27,7 +28,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { Button, Calendar, Empty, Popover, Skeleton } from "antd";
 import dayjs from "dayjs";
-import { useId, useState } from "react";
+import { useId, useState, type SyntheticEvent } from "react";
 import HoverTooltip from "@/components/HoverTooltip";
 import { formatDay, formatStamp, toDateKey } from "@/lib/date";
 import { STATUS, type Todo } from "@/lib/todo";
@@ -54,9 +55,15 @@ type TodoItemProps = {
   onMove: (todo: Todo, date: string) => void;
 };
 
+/** React events bubble out of portals, so this keeps presses inside the date picker popover from dragging the row. */
+const stopDrag = {
+  onMouseDown: (event: SyntheticEvent) => event.stopPropagation(),
+  onTouchStart: (event: SyntheticEvent) => event.stopPropagation(),
+  onKeyDown: (event: SyntheticEvent) => event.stopPropagation(),
+};
+
 function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
-  const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } =
-    useSortable({ id: item.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
   const [pickerOpen, setPickerOpen] = useState(false);
   const isDone = item.status === STATUS.IS_DONE;
   const isDeleted = item.status === STATUS.IS_DELETE;
@@ -66,7 +73,7 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
   if (isDeleted && item.deletedAt) stamps.push(`Deleted ${formatStamp(item.deletedAt, item.date)}`);
 
   const datePicker = (
-    <div className="todo-date-picker">
+    <div className="todo-date-picker" {...stopDrag}>
       <Calendar
         // Uncontrolled so the header can page through months; the key resets it after a move.
         key={item.date}
@@ -108,15 +115,12 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
       className={`todo-container-list ${isDone ? "todo-container-list-done" : ""} ${
         isDragging ? "todo-container-list-dragging" : ""
       }`}
+      aria-label={`${item.content}, drag to reorder`}
+      {...attributes}
+      {...listeners}
     >
       <div className="todo-item-operation">
-        <HolderOutlined
-          ref={setActivatorNodeRef}
-          className="todo-item-handle"
-          aria-label="Drag to reorder"
-          {...attributes}
-          {...listeners}
-        />
+        <HolderOutlined className="todo-item-handle" aria-hidden />
         <div className="todo-item-body">
           <span className="todo-item-content">{item.content}</span>
           <span className="todo-item-meta">{stamps.join(" · ")}</span>
@@ -184,7 +188,9 @@ export default function TodoList({ todos, filter, today, onChangeStatus, onReord
   // Stable id keeps dnd-kit's generated aria attributes identical between server and client render.
   const dndId = useId();
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    // A small move threshold lets clicks on the action icons through; touch needs a short hold so swipes still scroll.
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
