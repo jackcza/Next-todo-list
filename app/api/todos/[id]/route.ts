@@ -2,9 +2,10 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { jsonError, readJson } from "@/lib/http";
 import { POINTS_PER_TASK } from "@/lib/rank";
-import { STATUS, TODO_SELECT, isDateKey, isTodoStatus, toTodo } from "@/lib/todo";
+import { MAX_TODO_LENGTH, STATUS, TODO_SELECT, isDateKey, isTodoStatus, toTodo } from "@/lib/todo";
 
 type TodoUpdate = {
+  content?: string;
   status?: string;
   doneAt?: Date | null;
   deletedAt?: Date | null;
@@ -13,7 +14,7 @@ type TodoUpdate = {
 };
 
 /**
- * Body: { status } and/or { date }. Moving to another date puts the task at the end of that day.
+ * Body: any of { content }, { status } and { date }. Moving to another date puts the task at the end of that day.
  * Responds with the task and the user's rank points after the change.
  */
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -23,6 +24,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const body = await readJson(request);
   const data: TodoUpdate = {};
+
+  if (body.content !== undefined) {
+    const content = typeof body.content === "string" ? body.content.trim() : "";
+    if (!content) return jsonError("Task content cannot be empty.", 400);
+    if (content.length > MAX_TODO_LENGTH) {
+      return jsonError(`Task content must be at most ${MAX_TODO_LENGTH} characters.`, 400);
+    }
+    data.content = content;
+  }
 
   if (body.status !== undefined) {
     if (!isTodoStatus(body.status)) return jsonError("Invalid task status.", 400);

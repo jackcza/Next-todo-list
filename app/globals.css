@@ -359,8 +359,13 @@ body {
   color: #22c55e;
 }
 
-.todo-item-actions .todo-action-move:hover {
+.todo-item-actions .todo-action-move:hover,
+.todo-item-actions .todo-action-edit:hover {
   color: #6366f1;
+}
+
+.todo-item-editor {
+  font-size: 15px;
 }
 
 .todo-item-actions .todo-action-delete:hover {

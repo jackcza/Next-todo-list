@@ -79,6 +79,17 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
     }
   };
 
+  const editTodo = async (todo: Todo, content: string) => {
+    try {
+      const { todo: updated } = await requestJson<TodoUpdate>(`/api/todos/${todo.id}`, { method: "PATCH", body: { content } });
+      setTodos((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
+      return true;
+    } catch (error) {
+      handleError(error);
+      return false;
+    }
+  };
+
   const moveToDate = async (todo: Todo, date: string) => {
     try {
       const { todo: updated } = await requestJson<TodoUpdate>(`/api/todos/${todo.id}`, { method: "PATCH", body: { date } });
@@ -155,6 +166,7 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
         onChangeStatus={changeStatus}
         onReorder={reorderTodos}
         onMove={moveToDate}
+        onEdit={editTodo}
       />
     </div>
   );

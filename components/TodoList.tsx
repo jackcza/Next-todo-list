@@ -4,6 +4,7 @@ import {
   CalendarOutlined,
   CheckCircleOutlined,
   DeleteOutlined,
+  EditOutlined,
   HolderOutlined,
   LeftOutlined,
   RightOutlined,
@@ -26,14 +27,14 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Calendar, Empty, Popover, Skeleton } from "antd";
+import { Button, Calendar, Empty, Input, Popover, Skeleton } from "antd";
 import dayjs from "dayjs";
-import { useId, useState, type SyntheticEvent } from "react";
+import { useId, useRef, useState, type SyntheticEvent } from "react";
 import HoverTooltip from "@/components/HoverTooltip";
 import { useI18n } from "@/components/I18nProvider";
 import { burstCoins } from "@/lib/coinBurst";
 import { DAYJS_LOCALE, formatDay, formatStamp, toDateKey } from "@/lib/date";
-import { STATUS, type Todo } from "@/lib/todo";
+import { MAX_TODO_LENGTH, STATUS, type Todo } from "@/lib/todo";
 
 type TodoListProps = {
   todos: Todo[];
@@ -43,12 +44,15 @@ type TodoListProps = {
   onChangeStatus: (todo: Todo, status: string) => void;
   onReorder: (activeId: string, overId: string) => void;
   onMove: (todo: Todo, date: string) => void;
+  /** Resolves to false when saving failed, so the editor stays open. */
+  onEdit: (todo: Todo, content: string) => Promise<boolean>;
 };
 
 type TodoItemProps = {
   item: Todo;
   onChangeStatus: (todo: Todo, status: string) => void;
   onMove: (todo: Todo, date: string) => void;
+  onEdit: (todo: Todo, content: string) => Promise<boolean>;
 };
 
 /** React events bubble out of portals, so this keeps presses inside the date picker popover from dragging the row. */
@@ -58,8 +62,17 @@ const stopDrag = {
   onKeyDown: (event: SyntheticEvent) => event.stopPropagation(),
 };
 
-function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
+function TodoItem({ item, onChangeStatus, onMove, onEdit }: TodoItemProps) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(item.content);
+  // Refs, not state: Enter and the blur that follows it run in the same render and must see each other.
+  const saving = useRef(false);
+  // Set once the editor is closing, so a late blur from the unmounting input doesn't save again.
+  const cancelled = useRef(false);
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: item.id,
+    disabled: editing,
+  });
   const [pickerOpen, setPickerOpen] = useState(false);
   const { t, locale } = useI18n();
   const isDone = item.status === STATUS.IS_DONE;
@@ -68,6 +81,28 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
   const stamps = [t.list.added(formatStamp(item.createdAt, item.date, t.date))];
   if (isDone && item.doneAt) stamps.push(t.list.doneAt(formatStamp(item.doneAt, item.date, t.date)));
   if (isDeleted && item.deletedAt) stamps.push(t.list.deletedAt(formatStamp(item.deletedAt, item.date, t.date)));
+
+  const startEdit = () => {
+    cancelled.current = false;
+    setDraft(item.content);
+    setEditing(true);
+  };
+
+  const saveEdit = async () => {
+    if (cancelled.current || saving.current) return;
+    const content = draft.trim();
+    if (!content || content === item.content) {
+      setEditing(false);
+      return;
+    }
+    saving.current = true;
+    const ok = await onEdit(item, content);
+    saving.current = false;
+    if (ok) {
+      cancelled.current = true;
+      setEditing(false);
+    }
+  };
 
   const datePicker = (
     <div className="todo-date-picker" {...stopDrag}>
@@ -121,11 +156,41 @@ function TodoItem({ item, onChangeStatus, onMove }: TodoItemProps) {
       <div className="todo-item-operation">
         <HolderOutlined className="todo-item-handle" aria-hidden />
         <div className="todo-item-body">
-          <span className="todo-item-content">{item.content}</span>
+          {editing ? (
+            <Input
+              className="todo-item-editor"
+              size="small"
+              autoFocus
+              value={draft}
+              maxLength={MAX_TODO_LENGTH}
+              aria-label={t.list.edit}
+              onChange={(event) => setDraft(event.target.value)}
+              onPressEnter={saveEdit}
+              onBlur={saveEdit}
+              onMouseDown={stopDrag.onMouseDown}
+              onTouchStart={stopDrag.onTouchStart}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+                if (event.key === "Escape") {
+                  cancelled.current = true;
+                  setEditing(false);
+                }
+              }}
+            />
+          ) : (
+            <span className="todo-item-content" onDoubleClick={isDeleted ? undefined : startEdit}>
+              {item.content}
+            </span>
+          )}
           <span className="todo-item-meta">{stamps.join(" · ")}</span>
         </div>
         <div className="todo-item-actions">
           <span className="todo-item-dot" aria-hidden />
+          {!isDeleted ? (
+            <HoverTooltip title={t.list.edit}>
+              <EditOutlined className="todo-action todo-action-edit" onClick={startEdit} />
+            </HoverTooltip>
+          ) : null}
           {!isDeleted ? (
             // The tooltip wraps the popover (not the other way round) so the popover's click handlers
             // still reach the icon when HoverTooltip renders no tooltip on touch screens.
@@ -187,7 +252,7 @@ function groupByDate(todos: Todo[], today: string) {
   });
 }
 
-export default function TodoList({ todos, filter, today, onChangeStatus, onReorder, onMove }: TodoListProps) {
+export default function TodoList({ todos, filter, today, onChangeStatus, onReorder, onMove, onEdit }: TodoListProps) {
   // Stable id keeps dnd-kit's generated aria attributes identical between server and client render.
   const dndId = useId();
   const sensors = useSensors(
@@ -252,7 +317,7 @@ export default function TodoList({ todos, filter, today, onChangeStatus, onReord
                 <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
                   <ul className="todo-container">
                     {items.map((item) => (
-                      <TodoItem key={item.id} item={item} onChangeStatus={onChangeStatus} onMove={onMove} />
+                      <TodoItem key={item.id} item={item} onChangeStatus={onChangeStatus} onMove={onMove} onEdit={onEdit} />
                     ))}
                   </ul>
                 </SortableContext>
