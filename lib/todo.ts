@@ -8,6 +8,7 @@ export const STATUS = {
 export type Todo = {
   id: string;
   content: string;
+  location: string | null;
   status: string;
   date: string;
   createdAt: string;
@@ -18,6 +19,7 @@ export type Todo = {
 export const TODO_SELECT = {
   id: true,
   content: true,
+  location: true,
   status: true,
   date: true,
   createdAt: true,
@@ -43,6 +45,8 @@ export function toTodo(row: TodoRow): Todo {
 export const TODO_ORDER = [{ position: "asc" }, { createdAt: "asc" }] as const;
 
 export const MAX_TODO_LENGTH = 200;
+
+export const MAX_LOCATION_LENGTH = 100;
 
 export const MAX_REORDER_IDS = 1000;
 

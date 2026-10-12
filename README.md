@@ -41,8 +41,10 @@ Open the app and choose **Sign up**. Enter your email, tap **Send code**, type t
 
 - 在输入框写下任务，按回车或点「添加」，任务会归到今天。
   Type a task and press Enter or tap **Add**; it goes under today.
-- 每条任务右侧有四个按钮：✏️ 编辑、📅 移到其他日期、✓ 标记完成、🗑 删除。
-  Each task has four buttons on the right: ✏️ edit, 📅 move to another date, ✓ mark as done, 🗑 delete.
+- 每条任务右侧有五个按钮：✏️ 编辑、📍 地点、📅 移到其他日期、✓ 标记完成、🗑 删除。
+  Each task has five buttons on the right: ✏️ edit, 📍 location, 📅 move to another date, ✓ mark as done, 🗑 delete.
+- 点 📍 给任务填写地点（如"公司 3 楼会议室"），地点会显示在任务下方；再次点开可以修改或清除。
+  Tap 📍 to add a place (e.g. "Office, room 3"); it shows under the task, and you can change or clear it later.
 - 点 ✏️（电脑上也可以双击任务文字）直接修改内容：回车或点别处保存，Esc 取消。
   Tap ✏️ (or double-click the text on desktop) to edit a task: press Enter or click away to save, Esc to cancel.
 - 在「已完成」里点 ↩ 可以改回进行中；在「已删除」里点 ↩ 可以恢复。

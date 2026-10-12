@@ -2,10 +2,11 @@ import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { jsonError, readJson } from "@/lib/http";
 import { POINTS_PER_TASK } from "@/lib/rank";
-import { MAX_TODO_LENGTH, STATUS, TODO_SELECT, isDateKey, isTodoStatus, toTodo } from "@/lib/todo";
+import { MAX_LOCATION_LENGTH, MAX_TODO_LENGTH, STATUS, TODO_SELECT, isDateKey, isTodoStatus, toTodo } from "@/lib/todo";
 
 type TodoUpdate = {
   content?: string;
+  location?: string | null;
   status?: string;
   doneAt?: Date | null;
   deletedAt?: Date | null;
@@ -14,7 +15,8 @@ type TodoUpdate = {
 };
 
 /**
- * Body: any of { content }, { status } and { date }. Moving to another date puts the task at the end of that day.
+ * Body: any of { content }, { location }, { status } and { date }. A blank or null location clears it.
+ * Moving to another date puts the task at the end of that day.
  * Responds with the task and the user's rank points after the change.
  */
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -32,6 +34,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return jsonError(`Task content must be at most ${MAX_TODO_LENGTH} characters.`, 400);
     }
     data.content = content;
+  }
+
+  if (body.location !== undefined) {
+    if (body.location !== null && typeof body.location !== "string") return jsonError("Invalid location.", 400);
+    const location = body.location?.trim() ?? "";
+    if (location.length > MAX_LOCATION_LENGTH) {
+      return jsonError(`Location must be at most ${MAX_LOCATION_LENGTH} characters.`, 400);
+    }
+    data.location = location || null;
   }
 
   if (body.status !== undefined) {

@@ -5,6 +5,7 @@ import {
   CheckCircleOutlined,
   DeleteOutlined,
   EditOutlined,
+  EnvironmentOutlined,
   HolderOutlined,
   LeftOutlined,
   RightOutlined,
@@ -34,7 +35,7 @@ import HoverTooltip from "@/components/HoverTooltip";
 import { useI18n } from "@/components/I18nProvider";
 import { burstCoins } from "@/lib/coinBurst";
 import { DAYJS_LOCALE, formatDay, formatStamp, toDateKey } from "@/lib/date";
-import { MAX_TODO_LENGTH, STATUS, type Todo } from "@/lib/todo";
+import { MAX_LOCATION_LENGTH, MAX_TODO_LENGTH, STATUS, type Todo } from "@/lib/todo";
 
 type TodoListProps = {
   todos: Todo[];
@@ -46,6 +47,8 @@ type TodoListProps = {
   onMove: (todo: Todo, date: string) => void;
   /** Resolves to false when saving failed, so the editor stays open. */
   onEdit: (todo: Todo, content: string) => Promise<boolean>;
+  /** Null clears the location. Resolves to false when saving failed. */
+  onSetLocation: (todo: Todo, location: string | null) => Promise<boolean>;
 };
 
 type TodoItemProps = {
@@ -53,6 +56,7 @@ type TodoItemProps = {
   onChangeStatus: (todo: Todo, status: string) => void;
   onMove: (todo: Todo, date: string) => void;
   onEdit: (todo: Todo, content: string) => Promise<boolean>;
+  onSetLocation: (todo: Todo, location: string | null) => Promise<boolean>;
 };
 
 /** React events bubble out of portals, so this keeps presses inside the date picker popover from dragging the row. */
@@ -62,7 +66,9 @@ const stopDrag = {
   onKeyDown: (event: SyntheticEvent) => event.stopPropagation(),
 };
 
-function TodoItem({ item, onChangeStatus, onMove, onEdit }: TodoItemProps) {
+function TodoItem({ item, onChangeStatus, onMove, onEdit, onSetLocation }: TodoItemProps) {
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [locationDraft, setLocationDraft] = useState("");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(item.content);
   // Refs, not state: Enter and the blur that follows it run in the same render and must see each other.
@@ -103,6 +109,43 @@ function TodoItem({ item, onChangeStatus, onMove, onEdit }: TodoItemProps) {
       setEditing(false);
     }
   };
+
+  const toggleLocation = (open: boolean) => {
+    if (open) setLocationDraft(item.location ?? "");
+    setLocationOpen(open);
+  };
+
+  const saveLocation = async (value: string) => {
+    const location = value.trim();
+    if (location === (item.location ?? "") || (await onSetLocation(item, location || null))) {
+      setLocationOpen(false);
+    }
+  };
+
+  const locationEditor = (
+    <div className="todo-location-editor" {...stopDrag}>
+      <Input
+        autoFocus
+        prefix={<EnvironmentOutlined />}
+        placeholder={t.list.locationPlaceholder}
+        value={locationDraft}
+        maxLength={MAX_LOCATION_LENGTH}
+        aria-label={t.list.location}
+        onChange={(event) => setLocationDraft(event.target.value)}
+        onPressEnter={() => saveLocation(locationDraft)}
+      />
+      <div className="todo-location-buttons">
+        {item.location ? (
+          <Button size="small" type="text" danger onClick={() => saveLocation("")}>
+            {t.list.clearLocation}
+          </Button>
+        ) : null}
+        <Button size="small" type="primary" onClick={() => saveLocation(locationDraft)}>
+          {t.list.saveLocation}
+        </Button>
+      </div>
+    </div>
+  );
 
   const datePicker = (
     <div className="todo-date-picker" {...stopDrag}>
@@ -182,6 +225,11 @@ function TodoItem({ item, onChangeStatus, onMove, onEdit }: TodoItemProps) {
               {item.content}
             </span>
           )}
+          {item.location ? (
+            <span className="todo-item-location">
+              <EnvironmentOutlined /> {item.location}
+            </span>
+          ) : null}
           <span className="todo-item-meta">{stamps.join(" · ")}</span>
         </div>
         <div className="todo-item-actions">
@@ -189,6 +237,22 @@ function TodoItem({ item, onChangeStatus, onMove, onEdit }: TodoItemProps) {
           {!isDeleted ? (
             <HoverTooltip title={t.list.edit}>
               <EditOutlined className="todo-action todo-action-edit" onClick={startEdit} />
+            </HoverTooltip>
+          ) : null}
+          {!isDeleted ? (
+            <HoverTooltip title={t.list.setLocation}>
+              <Popover
+                content={locationEditor}
+                trigger="click"
+                placement="bottom"
+                open={locationOpen}
+                onOpenChange={toggleLocation}
+                destroyOnHidden
+              >
+                <EnvironmentOutlined
+                  className={`todo-action todo-action-location ${item.location ? "todo-action-location-set" : ""}`}
+                />
+              </Popover>
             </HoverTooltip>
           ) : null}
           {!isDeleted ? (
@@ -252,7 +316,16 @@ function groupByDate(todos: Todo[], today: string) {
   });
 }
 
-export default function TodoList({ todos, filter, today, onChangeStatus, onReorder, onMove, onEdit }: TodoListProps) {
+export default function TodoList({
+  todos,
+  filter,
+  today,
+  onChangeStatus,
+  onReorder,
+  onMove,
+  onEdit,
+  onSetLocation,
+}: TodoListProps) {
   // Stable id keeps dnd-kit's generated aria attributes identical between server and client render.
   const dndId = useId();
   const sensors = useSensors(
@@ -317,7 +390,14 @@ export default function TodoList({ todos, filter, today, onChangeStatus, onReord
                 <SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
                   <ul className="todo-container">
                     {items.map((item) => (
-                      <TodoItem key={item.id} item={item} onChangeStatus={onChangeStatus} onMove={onMove} onEdit={onEdit} />
+                      <TodoItem
+                        key={item.id}
+                        item={item}
+                        onChangeStatus={onChangeStatus}
+                        onMove={onMove}
+                        onEdit={onEdit}
+                        onSetLocation={onSetLocation}
+                      />
                     ))}
                   </ul>
                 </SortableContext>
