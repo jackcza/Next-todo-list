@@ -83,7 +83,9 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
 
   const setLocation = (todo: Todo, location: string | null) => patchTodo(todo, { location });
 
-  const patchTodo = async (todo: Todo, body: { content?: string; location?: string | null }) => {
+  const setTime = (todo: Todo, time: string | null) => patchTodo(todo, { time });
+
+  const patchTodo = async (todo: Todo, body: { content?: string; location?: string | null; time?: string | null }) => {
     try {
       const { todo: updated } = await requestJson<TodoUpdate>(`/api/todos/${todo.id}`, { method: "PATCH", body });
       setTodos((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
@@ -172,6 +174,7 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
         onMove={moveToDate}
         onEdit={editTodo}
         onSetLocation={setLocation}
+        onSetTime={setTime}
       />
     </div>
   );

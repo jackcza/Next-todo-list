@@ -10,8 +10,8 @@ A todo list app with email sign-up, tasks grouped by date, drag-to-reorder, a ra
 
 - **账号**：邮箱验证码注册、登录、找回密码，登录状态保持 30 天。
   **Accounts**: sign up with an email verification code, log in, reset your password; sessions last 30 days.
-- **按日期管理任务**：任务按天分组，今天在最上面；其他日期默认折叠，可以把任务移到任意日期。
-  **Tasks by date**: tasks are grouped by day with today on top; other days are collapsed, and any task can be moved to another date.
+- **按日期管理任务**：任务按天分组，今天在最上面；其他日期默认折叠，可以把任务移到任意日期，也可以给任务加上时间和地点。
+  **Tasks by date**: tasks are grouped by day with today on top; other days are collapsed, and any task can be moved to another date or given a time and place.
 - **三种状态**：进行中、已完成、已删除，每条任务都会显示添加、完成、删除的时间。
   **Three states**: active, done and deleted, with the time each task was added, completed or deleted.
 - **拖拽排序**：电脑上按住拖动，手机上长按约 0.2 秒后拖动，可调整同一天内的顺序。
@@ -41,10 +41,12 @@ Open the app and choose **Sign up**. Enter your email, tap **Send code**, type t
 
 - 在输入框写下任务，按回车或点「添加」，任务会归到今天。
   Type a task and press Enter or tap **Add**; it goes under today.
-- 每条任务右侧有五个按钮：✏️ 编辑、📍 地点、📅 移到其他日期、✓ 标记完成、🗑 删除。
-  Each task has five buttons on the right: ✏️ edit, 📍 location, 📅 move to another date, ✓ mark as done, 🗑 delete.
+- 每条任务右侧有六个按钮：✏️ 编辑、📍 地点、🕒 时间、📅 移到其他日期、✓ 标记完成、🗑 删除。
+  Each task has six buttons on the right: ✏️ edit, 📍 location, 🕒 time, 📅 move to another date, ✓ mark as done, 🗑 delete.
 - 点 📍 给任务填写地点（如"公司 3 楼会议室"），地点会显示在任务下方；再次点开可以修改或清除。
   Tap 📍 to add a place (e.g. "Office, room 3"); it shows under the task, and you can change or clear it later.
+- 点 🕒 给任务设置当天的时间（如 14:30），时间会显示在任务下方；再次点开可以修改或清除。
+  Tap 🕒 to set a time on that day (e.g. 14:30); it shows under the task, and you can change or clear it later.
 - 点 ✏️（电脑上也可以双击任务文字）直接修改内容：回车或点别处保存，Esc 取消。
   Tap ✏️ (or double-click the text on desktop) to edit a task: press Enter or click away to save, Esc to cancel.
 - 在「已完成」里点 ↩ 可以改回进行中；在「已删除」里点 ↩ 可以恢复。

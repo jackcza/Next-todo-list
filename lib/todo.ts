@@ -9,6 +9,8 @@ export type Todo = {
   id: string;
   content: string;
   location: string | null;
+  /** 'HH:mm' on `date`, in the user's local time zone. */
+  time: string | null;
   status: string;
   date: string;
   createdAt: string;
@@ -20,6 +22,7 @@ export const TODO_SELECT = {
   id: true,
   content: true,
   location: true,
+  time: true,
   status: true,
   date: true,
   createdAt: true,
@@ -52,6 +55,10 @@ export const MAX_REORDER_IDS = 1000;
 
 export function isTodoStatus(value: unknown): value is string {
   return typeof value === "string" && (Object.values(STATUS) as string[]).includes(value);
+}
+
+export function isTimeKey(value: unknown): value is string {
+  return typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
 }
 
 export function isDateKey(value: unknown): value is string {

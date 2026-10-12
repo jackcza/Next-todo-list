@@ -368,8 +368,19 @@ body {
   font-size: 15px;
 }
 
-.todo-item-location {
+.todo-item-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
   font-size: 12px;
+}
+
+.todo-item-time {
+  color: #0d9488;
+  white-space: nowrap;
+}
+
+.todo-item-location {
   color: #6366f1;
   word-break: break-all;
 }
@@ -379,7 +390,13 @@ body {
   color: #6366f1;
 }
 
-.todo-location-editor {
+.todo-item-actions .todo-action-time:hover,
+.todo-item-actions .todo-action-time-set {
+  color: #0d9488;
+}
+
+.todo-location-editor,
+.todo-time-editor {
   display: flex;
   flex-direction: column;
   gap: 8px;
