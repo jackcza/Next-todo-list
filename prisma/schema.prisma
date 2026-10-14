@@ -9,16 +9,34 @@ datasource db {
 
 /// role: 'user' or 'admin'; admins are granted with `npm run admin:grant -- <email>`
 /// points: rank points, 10 per task that has a doneAt; kept in step by POST /api/sync
+/// timeZone: IANA name reported by the browser on each sync, used to turn a task's local date and time into
+/// the moment its reminder is due
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
-  passwordHash String
-  role         String    @default("user")
-  points       Int       @default(0)
-  createdAt    DateTime  @default(now())
-  sessions     Session[]
-  todos        Todo[]
-  appliedOps   AppliedOp[]
+  id                String             @id @default(uuid())
+  email             String             @unique
+  passwordHash      String
+  role              String             @default("user")
+  points            Int                @default(0)
+  timeZone          String?
+  createdAt         DateTime           @default(now())
+  sessions          Session[]
+  todos             Todo[]
+  appliedOps        AppliedOp[]
+  pushSubscriptions PushSubscription[]
+}
+
+/// One per browser that turned reminders on. locale: language for the notification text.
+model PushSubscription {
+  id        String   @id @default(uuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  locale    String   @default("en")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 /// purpose: 'register' or 'reset', so a code can only be used for the flow it was sent for
@@ -55,6 +73,7 @@ model Session {
 /// time: optional 'HH:mm' on that day in the user's local time zone, null when not set
 /// version: taken from a sequence on every insert and update (a trigger handles updates), so /api/sync can return
 /// only the tasks that changed since the version a device last saw
+/// remindedFor: the 'YYYY-MM-DD HH:mm' a reminder was last sent for, so moving the task's time re-arms it
 model Todo {
   id        String    @id @default(uuid())
   userId    String
@@ -69,6 +88,7 @@ model Todo {
   createdAt DateTime  @default(now())
   updatedAt DateTime @updatedAt
   version   BigInt   @default(autoincrement())
+  remindedFor String?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])

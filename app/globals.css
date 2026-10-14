@@ -127,6 +127,10 @@ body {
   color: #f59e0b;
 }
 
+.todo-reminder-on {
+  color: #f59e0b;
+}
+
 .todo-sync {
   display: block;
   box-sizing: border-box;

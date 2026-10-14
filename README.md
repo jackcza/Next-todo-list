@@ -26,6 +26,8 @@ A todo list app with email sign-up, tasks grouped by date, drag-to-reorder, a ra
   **Instant start**: after the first visit, the app opens from the copy saved on the device and refreshes it in the background.
 - **离线可用**：所有操作立即生效并先保存在本机，断网也能打开任务列表、添加和修改任务，联网后自动同步；多个标签页、多台设备之间的修改也会自动合并。顶部会提示离线、待同步条数或同步失败。
   **Works offline**: every change takes effect at once and is saved on the device first, so you can open, add and edit tasks without a connection; they sync automatically when you're back online, and changes from other tabs and devices are merged in. A bar at the top shows when you're offline, how many changes are waiting, or when a sync failed.
+- **到点提醒**：设了时间的任务会在开始前 15 分钟发通知；开启后即使应用关着也能收到，应用开着时页面里也会提示。
+  **Reminders**: tasks with a time send a notification 15 minutes before they start, even when the app is closed once reminders are on; the open app shows them too.
 - **PWA**：可以安装到手机或电脑。
   **PWA**: installable on phones and desktops.
 - **管理后台**：管理员可以查看用户增长和每日新增任务的图表。
@@ -59,6 +61,8 @@ Open the app and choose **Sign up**. Enter your email, tap **Send code**, type t
   Days other than today are collapsed; tap the day header to expand.
 - 按住任务拖动可以调整同一天里的顺序。
   Press and drag a task to reorder it within the same day.
+- 点顶部的 🔔「提醒」并允许通知，设了时间的任务会在开始前 15 分钟提醒你。每台设备要分别开启；再点一次关闭。iPhone 需要先添加到主屏幕（iOS 16.4 以上），再从主屏幕打开开启。
+  Tap 🔔 **Reminders** at the top and allow notifications to be reminded 15 minutes before each task with a time. Turn it on for each device; tap again to turn it off. On iPhone, add the app to the Home Screen first (iOS 16.4+) and turn it on from there.
 
 ### 3. 段位规则 / Rank rules
 
@@ -116,6 +120,7 @@ The **Guide** button at the top opens an animated walkthrough (`/guide.html`), w
 | 数据库 / Database | PostgreSQL (Neon), Prisma 7 with `@prisma/adapter-pg` |
 | 认证 / Auth | 自建会话 Cookie + bcryptjs 密码哈希 / Session cookies with bcryptjs password hashing |
 | 邮件 / Email | Nodemailer + Brevo SMTP |
+| 推送 / Push | web-push (VAPID), cron-job.org |
 | 部署 / Hosting | Vercel |
 
 ---
@@ -161,7 +166,20 @@ SMTP_USER="your-smtp-login"
 SMTP_PASS="your-smtp-key"
 # 必须是在 Brevo 中验证过的发件地址 / Must be a sender verified in Brevo
 MAIL_FROM="you@example.com"
+
+# 到点提醒的推送密钥，用 npx web-push generate-vapid-keys 生成
+# Push keys for reminders, generated with npx web-push generate-vapid-keys
+VAPID_PUBLIC_KEY="..."
+VAPID_PRIVATE_KEY="..."
+VAPID_SUBJECT="mailto:you@example.com"
+# 定时器调用 /api/reminders/tick 时带的密钥，任意长随机字符串
+# Secret the scheduler sends to /api/reminders/tick; any long random string
+CRON_SECRET="..."
 ```
+
+不配置推送密钥时，「提醒」按钮不显示，只有应用开着时页面里会提示。
+
+Without the push keys, the Reminders button is hidden and reminders only show inside the open app.
 
 不配置 SMTP 时，验证码不会发邮件，而是打印在运行 `npm run dev` 的终端里，方便本地测试。
 
@@ -234,13 +252,30 @@ We recommend [Vercel](https://vercel.com):
 
 After that, every push to GitHub is built and deployed automatically.
 
+### 提醒定时器 / Reminder scheduler
+
+服务器需要每分钟检查一次哪些任务快开始了。Vercel 免费版的定时任务最短一天一次，所以用免费的 [cron-job.org](https://cron-job.org)：
+
+The server checks every minute for tasks about to start. Vercel's free cron runs at most once a day, so use the free [cron-job.org](https://cron-job.org):
+
+1. 注册后点 **Create cronjob**。
+   Sign up and choose **Create cronjob**.
+2. URL 填 `https://你的域名/api/reminders/tick`，执行频率选 **Every minute**。
+   Set the URL to `https://your-domain/api/reminders/tick` and the schedule to **Every minute**.
+3. 在 **Advanced → Headers** 里加一个 `Authorization`，值为 `Bearer 你的CRON_SECRET`。
+   Under **Advanced → Headers**, add `Authorization` with the value `Bearer <your CRON_SECRET>`.
+
+接口返回 `{"tasks":…, "sent":…}`，分别是这次提醒的任务数和发出的通知数。
+
+The endpoint answers `{"tasks":…, "sent":…}`: the tasks reminded this run and the notifications sent.
+
 ---
 
 ## 目录结构 / Project structure
 
 ```text
 app/                 页面与 API 路由 / Pages and API routes
-  api/               认证、任务、管理后台接口 / Auth, task and admin endpoints
+  api/               认证、同步、提醒、管理后台接口 / Auth, sync, reminder and admin endpoints
   admin/             管理后台页面 / Admin pages
   login/ register/ forgot-password/   账号相关页面 / Account pages
 components/          React 组件 / React components

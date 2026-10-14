@@ -24,6 +24,7 @@ export default async function Home() {
         cursor: maxVersion(todos.map((todo) => todo.version)),
         points: user.points,
       }}
+      vapidPublicKey={process.env.VAPID_PUBLIC_KEY ?? null}
     />
   );
 }

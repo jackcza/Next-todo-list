@@ -5,10 +5,11 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { App, Button } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import InstallButton from "@/components/InstallButton";
 import LanguageSwitch from "@/components/LanguageSwitch";
 import RankBar from "@/components/RankBar";
+import ReminderButton from "@/components/ReminderButton";
 import SyncStatus from "@/components/SyncStatus";
 import TodoFilter from "@/components/TodoFilter";
 import TodoInput from "@/components/TodoInput";
@@ -18,6 +19,7 @@ import { ApiError, requestJson } from "@/lib/api-client";
 import { DAYJS_LOCALE, toDateKey, useToday } from "@/lib/date";
 import { translateServerError } from "@/lib/i18n";
 import { getRank } from "@/lib/rank";
+import { disablePush, useInAppReminders } from "@/lib/reminders-client";
 import { SyncEngine, newId, type Snapshot } from "@/lib/sync-client";
 import { STATUS, type Todo } from "@/lib/todo";
 import type { TodoChanges } from "@/lib/todo-ops";
@@ -25,17 +27,32 @@ import type { TodoChanges } from "@/lib/todo-ops";
 type TodoAppProps = {
   email: string;
   snapshot: Snapshot;
+  /** Null when push isn't configured on the server; reminders then only show while the page is open. */
+  vapidPublicKey: string | null;
 };
 
-export default function TodoApp({ email, snapshot }: TodoAppProps) {
+export default function TodoApp({ email, snapshot, vapidPublicKey }: TodoAppProps) {
   const router = useRouter();
-  const { message, modal } = App.useApp();
+  const { message, modal, notification } = App.useApp();
   const { t, locale } = useI18n();
   const [engine] = useState(() => new SyncEngine(snapshot));
   const view = useSyncExternalStore(engine.subscribe, engine.getView, engine.getView);
   const { todos, points } = view;
   const [filter, setFilter] = useState<string>(STATUS.IS_CREATE);
+  const [pushOn, setPushOn] = useState(false);
   const today = useToday();
+
+  const showReminder = useCallback(
+    (todo: Todo, minutes: number) =>
+      notification.info({
+        key: `reminder-${todo.id}`,
+        title: t.reminder.startsIn(minutes),
+        description: [`${todo.time} ${todo.content}`, todo.location].filter(Boolean).join(" · "),
+        duration: 0,
+      }),
+    [notification, t],
+  );
+  useInAppReminders(todos, !pushOn, showReminder);
 
   const goToLogin = () => {
     router.replace("/login");
@@ -134,6 +151,8 @@ export default function TodoApp({ email, snapshot }: TodoAppProps) {
       });
       if (!confirmed) return;
     }
+    // Otherwise the next person to log in on this browser would get this account's reminders.
+    await disablePush().catch(() => undefined);
     try {
       await requestJson("/api/auth/logout", { method: "POST" });
     } catch (error) {
@@ -167,6 +186,7 @@ export default function TodoApp({ email, snapshot }: TodoAppProps) {
           >
             {t.common.guide}
           </Button>
+          {vapidPublicKey ? <ReminderButton publicKey={vapidPublicKey} onChange={setPushOn} /> : null}
           <InstallButton />
           <Button size="small" type="text" icon={<LogoutOutlined />} onClick={logout}>
             {t.common.logOut}
