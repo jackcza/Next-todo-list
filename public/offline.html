@@ -41,22 +41,43 @@
         font-size: 15px;
         line-height: 1.6;
       }
+      a,
       button {
+        display: inline-block;
+        margin: 0 4px;
         padding: 10px 28px;
         border: none;
         border-radius: 10px;
         background: #6366f1;
         color: #fff;
         font-size: 15px;
+        text-decoration: none;
         cursor: pointer;
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <h1>You're offline</h1>
-      <p>Your tasks are saved online. Check your connection and try again.</p>
-      <button type="button" onclick="location.reload()">Try again</button>
+      <h1 id="title">You're offline</h1>
+      <p id="text">
+        This page needs a connection. Your task list works offline once you have opened it online on this device.
+      </p>
+      <a id="home" href="/">My tasks</a>
+      <button id="retry" type="button" onclick="location.reload()">Try again</button>
     </div>
+    <script>
+      // Same preference the app stores (see lib/i18n.ts), falling back to the browser language.
+      var saved = (document.cookie.match(/(?:^|; )lang=(\w+)/) || [])[1];
+      var lang = saved || (/^zh/i.test(navigator.language) ? "zh" : "en");
+      if (lang === "zh") {
+        document.documentElement.lang = "zh-CN";
+        document.title = "离线 · 待办清单";
+        document.getElementById("title").textContent = "当前处于离线状态";
+        document.getElementById("text").textContent =
+          "这个页面需要联网。只要在这台设备上联网打开过任务列表，之后离线也能使用。";
+        document.getElementById("home").textContent = "我的任务";
+        document.getElementById("retry").textContent = "重试";
+      }
+    </script>
   </body>
 </html>

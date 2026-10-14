@@ -8,7 +8,7 @@ datasource db {
 }
 
 /// role: 'user' or 'admin'; admins are granted with `npm run admin:grant -- <email>`
-/// points: rank points, 10 per task that has a doneAt; kept in step by PATCH /api/todos/[id]
+/// points: rank points, 10 per task that has a doneAt; kept in step by POST /api/sync
 model User {
   id           String    @id @default(uuid())
   email        String    @unique
@@ -18,6 +18,7 @@ model User {
   createdAt    DateTime  @default(now())
   sessions     Session[]
   todos        Todo[]
+  appliedOps   AppliedOp[]
 }
 
 /// purpose: 'register' or 'reset', so a code can only be used for the flow it was sent for
@@ -52,6 +53,8 @@ model Session {
 /// date: the day the task belongs to, 'YYYY-MM-DD' in the user's local time zone
 /// location: optional free-text place, null when not set
 /// time: optional 'HH:mm' on that day in the user's local time zone, null when not set
+/// version: taken from a sequence on every insert and update (a trigger handles updates), so /api/sync can return
+/// only the tasks that changed since the version a device last saw
 model Todo {
   id        String    @id @default(uuid())
   userId    String
@@ -65,7 +68,21 @@ model Todo {
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime @updatedAt
+  version   BigInt   @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([userId, version])
+}
+
+/// Sync operations already applied, so a request retried after a dropped response doesn't apply one twice.
+/// Rows older than 30 days are cleared by /api/sync.
+model AppliedOp {
+  userId    String
+  id        String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, id])
+  @@index([createdAt])
 }

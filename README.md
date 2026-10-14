@@ -22,8 +22,10 @@ A todo list app with email sign-up, tasks grouped by date, drag-to-reorder, a ra
   **Rewards**: marking a task done bursts gold coins and earns rank points.
 - **中英文切换**：默认跟随浏览器语言，可以在卡片右上角切换，选择会被记住。
   **Chinese / English**: follows the browser language by default; switch in the card's top-right corner and the choice is remembered.
-- **PWA**：可以安装到手机或电脑，离线时显示提示页。
-  **PWA**: installable on phones and desktops, with an offline page.
+- **离线可用**：所有操作立即生效并先保存在本机，断网也能打开任务列表、添加和修改任务，联网后自动同步；多个标签页、多台设备之间的修改也会自动合并。顶部会提示离线、待同步条数或同步失败。
+  **Works offline**: every change takes effect at once and is saved on the device first, so you can open, add and edit tasks without a connection; they sync automatically when you're back online, and changes from other tabs and devices are merged in. A bar at the top shows when you're offline, how many changes are waiting, or when a sync failed.
+- **PWA**：可以安装到手机或电脑。
+  **PWA**: installable on phones and desktops.
 - **管理后台**：管理员可以查看用户增长和每日新增任务的图表。
   **Admin dashboard**: admins can see charts of user growth and tasks added per day.
 
@@ -240,7 +242,7 @@ app/                 页面与 API 路由 / Pages and API routes
   admin/             管理后台页面 / Admin pages
   login/ register/ forgot-password/   账号相关页面 / Account pages
 components/          React 组件 / React components
-lib/                 认证、数据库、日期、段位、多语言等 / Auth, database, dates, ranks, i18n
+lib/                 认证、数据库、离线同步、日期、段位、多语言等 / Auth, database, offline sync, dates, ranks, i18n
 prisma/              数据库模型和迁移 / Database schema and migrations
 public/              图标、Service Worker、离线页、使用说明页 / Icons, service worker, offline and guide pages
 scripts/             管理员和图标生成脚本 / Admin and icon scripts

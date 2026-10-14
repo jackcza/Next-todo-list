@@ -5,33 +5,35 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { App, Button } from "antd";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import InstallButton from "@/components/InstallButton";
 import LanguageSwitch from "@/components/LanguageSwitch";
 import RankBar from "@/components/RankBar";
+import SyncStatus from "@/components/SyncStatus";
 import TodoFilter from "@/components/TodoFilter";
 import TodoInput from "@/components/TodoInput";
 import TodoList from "@/components/TodoList";
 import { useI18n } from "@/components/I18nProvider";
 import { ApiError, requestJson } from "@/lib/api-client";
 import { DAYJS_LOCALE, toDateKey, useToday } from "@/lib/date";
+import { translateServerError } from "@/lib/i18n";
 import { getRank } from "@/lib/rank";
+import { SyncEngine, newId, type Snapshot } from "@/lib/sync-client";
 import { STATUS, type Todo } from "@/lib/todo";
+import type { TodoChanges } from "@/lib/todo-ops";
 
 type TodoAppProps = {
   email: string;
-  initialTodos: Todo[];
-  initialPoints: number;
+  snapshot: Snapshot;
 };
 
-type TodoUpdate = { todo: Todo; points: number };
-
-export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppProps) {
+export default function TodoApp({ email, snapshot }: TodoAppProps) {
   const router = useRouter();
-  const { message } = App.useApp();
-  const { t, locale, errorText } = useI18n();
-  const [todos, setTodos] = useState(initialTodos);
-  const [points, setPoints] = useState(initialPoints);
+  const { message, modal } = App.useApp();
+  const { t, locale } = useI18n();
+  const [engine] = useState(() => new SyncEngine(snapshot));
+  const view = useSyncExternalStore(engine.subscribe, engine.getView, engine.getView);
+  const { todos, points } = view;
   const [filter, setFilter] = useState<string>(STATUS.IS_CREATE);
   const today = useToday();
 
@@ -40,76 +42,70 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
     router.refresh();
   };
 
-  const handleError = (error: unknown) => {
-    if (error instanceof ApiError && error.status === 401) {
-      goToLogin();
-      return;
-    }
-    message.error(errorText(error));
-  };
+  useEffect(
+    () =>
+      engine.start(() => {
+        router.replace("/login");
+        router.refresh();
+      }),
+    [engine, router],
+  );
+
+  useEffect(
+    () =>
+      engine.onNotice((notice) => {
+        if (notice.type === "discarded") {
+          message.warning(t.sync.discarded(notice.count));
+        } else {
+          for (const error of notice.errors) message.error(t.sync.rejected(translateServerError(error, locale)));
+        }
+      }),
+    [engine, message, t, locale],
+  );
 
   const addTodo = async (content: string) => {
-    try {
-      const todo = await requestJson<Todo>("/api/todos", { method: "POST", body: { content, date: toDateKey() } });
-      setTodos((prev) => [...prev, todo]);
-      return true;
-    } catch (error) {
-      handleError(error);
-      return false;
+    engine.enqueue({
+      type: "create",
+      todo: { id: newId(), content, date: toDateKey(), location: null, time: null },
+    });
+    return true;
+  };
+
+  const update = (todo: Todo, changes: TodoChanges) => engine.enqueue({ type: "update", todoId: todo.id, changes });
+
+  const changeStatus = (todo: Todo, status: string) => {
+    const before = getRank(engine.getView().points, t.rank);
+    update(todo, { status });
+    const after = getRank(engine.getView().points, t.rank);
+    if (after.name !== before.name && after.totalStars > before.totalStars) {
+      message.success(t.rank.promoted(after.name));
+    } else if (after.totalStars > before.totalStars) {
+      message.success(t.rank.starUp);
     }
   };
 
-  const changeStatus = async (todo: Todo, status: string) => {
-    try {
-      const { todo: updated, points: nextPoints } = await requestJson<TodoUpdate>(`/api/todos/${todo.id}`, {
-        method: "PATCH",
-        body: { status },
-      });
-      setTodos((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
-      setPoints(nextPoints);
-      const before = getRank(points, t.rank);
-      const after = getRank(nextPoints, t.rank);
-      if (after.name !== before.name && after.totalStars > before.totalStars) {
-        message.success(t.rank.promoted(after.name));
-      } else if (after.totalStars > before.totalStars) {
-        message.success(t.rank.starUp);
-      }
-    } catch (error) {
-      handleError(error);
-    }
+  const editTodo = async (todo: Todo, content: string) => {
+    update(todo, { content });
+    return true;
   };
 
-  const editTodo = (todo: Todo, content: string) => patchTodo(todo, { content });
-
-  const setLocation = (todo: Todo, location: string | null) => patchTodo(todo, { location });
-
-  const setTime = (todo: Todo, time: string | null) => patchTodo(todo, { time });
-
-  const patchTodo = async (todo: Todo, body: { content?: string; location?: string | null; time?: string | null }) => {
-    try {
-      const { todo: updated } = await requestJson<TodoUpdate>(`/api/todos/${todo.id}`, { method: "PATCH", body });
-      setTodos((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
-      return true;
-    } catch (error) {
-      handleError(error);
-      return false;
-    }
+  const setLocation = async (todo: Todo, location: string | null) => {
+    update(todo, { location });
+    return true;
   };
 
-  const moveToDate = async (todo: Todo, date: string) => {
-    try {
-      const { todo: updated } = await requestJson<TodoUpdate>(`/api/todos/${todo.id}`, { method: "PATCH", body: { date } });
-      // The server appends it to the end of the target day, so mirror that locally.
-      setTodos((prev) => [...prev.filter((item) => item.id !== updated.id), updated]);
-      message.success(t.app.movedTo(dayjs(date).locale(DAYJS_LOCALE[locale]).format(t.date.short)));
-    } catch (error) {
-      handleError(error);
-    }
+  const setTime = async (todo: Todo, time: string | null) => {
+    update(todo, { time });
+    return true;
   };
 
-  const reorderTodos = async (activeId: string, overId: string) => {
-    const prev = todos;
-    const visible = prev.filter((item) => item.status === filter);
+  const moveToDate = (todo: Todo, date: string) => {
+    update(todo, { date });
+    message.success(t.app.movedTo(dayjs(date).locale(DAYJS_LOCALE[locale]).format(t.date.short)));
+  };
+
+  const reorderTodos = (activeId: string, overId: string) => {
+    const visible = todos.filter((item) => item.status === filter);
     const from = visible.findIndex((item) => item.id === activeId);
     const to = visible.findIndex((item) => item.id === overId);
     if (from === -1 || to === -1 || visible[from].date !== visible[to].date) return;
@@ -117,19 +113,37 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
     // Reorder only the visible items, keeping hidden ones in their original slots.
     const moved = arrayMove(visible, from, to);
     let cursor = 0;
-    const next = prev.map((item) => (item.status === filter ? moved[cursor++] : item));
-    setTodos(next);
-
-    try {
-      await requestJson("/api/todos/order", { method: "PUT", body: { ids: next.map((item) => item.id) } });
-    } catch (error) {
-      setTodos(prev);
-      handleError(error);
-    }
+    const next = todos.map((item) => (item.status === filter ? moved[cursor++] : item));
+    engine.enqueue({ type: "reorder", ids: next.map((item) => item.id) });
   };
 
   const logout = async () => {
-    await requestJson("/api/auth/logout", { method: "POST" }).catch(() => undefined);
+    if (!navigator.onLine) {
+      message.warning(t.sync.logoutOffline);
+      return;
+    }
+    await engine.syncNow(true);
+    const { pending } = engine.getView();
+    if (pending > 0) {
+      const confirmed = await modal.confirm({
+        title: t.sync.logoutPendingTitle,
+        content: t.sync.logoutPendingText(pending),
+        okText: t.sync.logoutAnyway,
+        okButtonProps: { danger: true },
+        cancelText: t.sync.cancel,
+      });
+      if (!confirmed) return;
+    }
+    try {
+      await requestJson("/api/auth/logout", { method: "POST" });
+    } catch (error) {
+      // A 401 means the session is already gone, which is what logging out wants anyway.
+      if (!(error instanceof ApiError && error.status === 401)) {
+        message.error(t.sync.logoutFailed);
+        return;
+      }
+    }
+    await engine.clearLocal();
     goToLogin();
   };
 
@@ -159,6 +173,7 @@ export default function TodoApp({ email, initialTodos, initialPoints }: TodoAppP
           </Button>
         </div>
       </header>
+      <SyncStatus view={view} onRetry={() => void engine.syncNow()} onLogin={goToLogin} />
       <RankBar rank={rank} />
       <p className="todo-app-tip">
         <BulbOutlined /> {t.app.tip}
