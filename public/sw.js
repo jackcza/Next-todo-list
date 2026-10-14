@@ -10,8 +10,6 @@ const PRECACHE_URLS = [OFFLINE_URL, "/icons/icon-192.png"];
 const OFFLINE_PAGES = ["/", "/guide.html"];
 // Every deploy produces new hashed asset names, so cap the cache instead of letting old builds pile up.
 const MAX_ASSETS = 300;
-// On a slow connection, show the saved page after this long instead of waiting for the network.
-const NETWORK_TIMEOUT_MS = 3000;
 
 async function putAsset(request, response) {
   const cache = await caches.open(STATIC_CACHE);
@@ -36,26 +34,25 @@ self.addEventListener("activate", (event) => {
 });
 
 /**
- * Network first. A successful page (not a redirect to the login page) replaces the saved copy; when the
- * network fails or is too slow, the saved copy is shown, and the app catches up from IndexedDB and /api/sync.
+ * Cache first: the saved copy opens instantly while the network refreshes it for next time, and the app
+ * catches up on the data from IndexedDB and /api/sync. A redirect (the session has ended) drops the saved
+ * copy so the next visit goes to the login page. Without a saved copy, the page comes from the network.
  */
-function handlePage(event, pathname) {
+async function handlePage(event, pathname) {
+  const cache = await caches.open(PAGES_CACHE);
   const network = fetch(event.request).then((response) => {
-    if (response.ok && response.type === "basic" && !response.redirected) {
-      const copy = response.clone();
-      event.waitUntil(caches.open(PAGES_CACHE).then((cache) => cache.put(pathname, copy)));
+    if (response.redirected) {
+      event.waitUntil(cache.delete(pathname));
+    } else if (response.ok && response.type === "basic") {
+      event.waitUntil(cache.put(pathname, response.clone()));
     }
     return response;
   });
   event.waitUntil(network.catch(() => undefined));
 
-  const cached = caches.open(PAGES_CACHE).then((cache) => cache.match(pathname, { ignoreVary: true }));
-  const timeout = new Promise((resolve) => setTimeout(resolve, NETWORK_TIMEOUT_MS));
-  const slowFallback = timeout.then(() => cached).then((response) => response || network);
-
-  return Promise.race([network, slowFallback]).catch(() =>
-    cached.then((response) => response || caches.match(OFFLINE_URL)),
-  );
+  const cached = await cache.match(pathname, { ignoreVary: true });
+  if (cached) return cached;
+  return network.catch(() => caches.match(OFFLINE_URL));
 }
 
 self.addEventListener("fetch", (event) => {

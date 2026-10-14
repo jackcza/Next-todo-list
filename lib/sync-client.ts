@@ -239,11 +239,18 @@ export class SyncEngine {
         const response = await fetch("/api/sync", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ops: batch.map((entry) => entry.op), since: meta.cursor }),
+          body: JSON.stringify({ userId: meta.userId, ops: batch.map((entry) => entry.op), since: meta.cursor }),
           signal: AbortSignal.timeout?.(REQUEST_TIMEOUT_MS),
         });
         if (response.status === 401) {
           this.setStatus("auth");
+          return;
+        }
+        if (response.status === 409) {
+          // The saved page was for another account; load the current one, which replaces the local copy.
+          if (typeof caches !== "undefined") await caches.delete(PAGES_CACHE).catch(() => false);
+          this.stop();
+          window.location.reload();
           return;
         }
         if (!response.ok) throw new Error(`Sync failed with status ${response.status}.`);

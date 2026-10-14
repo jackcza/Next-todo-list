@@ -22,6 +22,8 @@ A todo list app with email sign-up, tasks grouped by date, drag-to-reorder, a ra
   **Rewards**: marking a task done bursts gold coins and earns rank points.
 - **中英文切换**：默认跟随浏览器语言，可以在卡片右上角切换，选择会被记住。
   **Chinese / English**: follows the browser language by default; switch in the card's top-right corner and the choice is remembered.
+- **秒开**：打开过一次后，再打开直接显示本机保存的页面，同时在后台更新。
+  **Instant start**: after the first visit, the app opens from the copy saved on the device and refreshes it in the background.
 - **离线可用**：所有操作立即生效并先保存在本机，断网也能打开任务列表、添加和修改任务，联网后自动同步；多个标签页、多台设备之间的修改也会自动合并。顶部会提示离线、待同步条数或同步失败。
   **Works offline**: every change takes effect at once and is saved on the device first, so you can open, add and edit tasks without a connection; they sync automatically when you're back online, and changes from other tabs and devices are merged in. A bar at the top shows when you're offline, how many changes are waiting, or when a sync failed.
 - **PWA**：可以安装到手机或电脑。
