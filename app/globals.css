@@ -372,13 +372,15 @@ button.todo-sync {
 }
 
 .todo-item-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  place-items: center;
+  gap: 2px 4px;
 }
 
 .todo-item-actions .todo-action {
-  font-size: 18px;
+  padding: 6px;
+  font-size: 20px;
   color: #94a3b8;
   cursor: pointer;
   transition: color 0.2s, transform 0.2s;
@@ -482,11 +484,7 @@ button.todo-sync {
   }
 
   .todo-item-actions {
-    gap: 9px;
-  }
-
-  .todo-item-actions .todo-action {
-    font-size: 16px;
+    gap: 0 2px;
   }
 
   .todo-item-dot {
