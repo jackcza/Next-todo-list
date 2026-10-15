@@ -18,18 +18,21 @@
         color: #1e293b;
       }
       .wrap { width: 100%; max-width: 420px; }
-      .lang { display: flex; justify-content: flex-end; gap: 2px; margin-bottom: 10px; }
+      .lang { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+      .lang-inner { display: inline-flex; padding: 2px; border-radius: 8px; background: #f5f5f5; }
       .lang button {
-        padding: 3px 10px;
+        height: 20px;
+        padding: 0 7px;
         border: none;
-        border-radius: 999px;
+        border-radius: 6px;
         background: none;
-        color: #94a3b8;
+        color: rgba(0, 0, 0, 0.65);
         font: inherit;
-        font-size: 12px;
+        font-size: 14px;
+        line-height: 20px;
         cursor: pointer;
       }
-      .lang button.on { background: #fff; color: #6366f1; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+      .lang button.on { background: #fff; color: rgba(0, 0, 0, 0.88); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.02); }
       h1 {
         margin: 0 0 14px;
         text-align: center;
@@ -55,84 +58,139 @@
       .cta-login { color: #6366f1; font-size: 13px; text-decoration: none; }
       .cta-login:hover { text-decoration: underline; }
       .stage { position: relative; }
+      /* The demo card mirrors app/globals.css at phone width, plus the antd components it uses. */
+      .ai { display: inline-block; flex-shrink: 0; width: 1em; height: 1em; vertical-align: -0.125em; fill: currentColor; }
       .card {
-        padding: 22px 18px 16px;
+        padding: 32px 24px;
         border-radius: 20px;
         background: #fff;
         box-shadow: 0 20px 50px -12px rgba(79, 70, 229, 0.18);
       }
-      .input-row { display: flex; gap: 8px; }
-      .input-row input, .input-row button, .tabs button, .day, .icon {
-        font: inherit;
+      .app-head { margin-bottom: 24px; text-align: center; }
+      .app-title {
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1.3;
+        background: linear-gradient(90deg, #6366f1, #a855f7);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
       }
+      .app-sub { margin: 6px 0 0; font-size: 14px; color: #94a3b8; }
+      .account {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        margin-top: 8px;
+        font-size: 13px;
+        color: #64748b;
+      }
+      .tbtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 24px;
+        padding: 0 7px;
+        border-radius: 8px;
+        color: rgba(0, 0, 0, 0.88);
+        font-size: 14px;
+        white-space: nowrap;
+        transition: background 0.2s;
+      }
+      .tbtn.hot { background: rgba(0, 0, 0, 0.06); }
+      .tbtn .bell-on { color: #f59e0b; }
+      .tbtn.square { justify-content: center; width: 24px; padding: 0; }
+      .tip {
+        margin: -6px 0 16px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        background: #fffbeb;
+        color: #92400e;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .tip .ai { color: #f59e0b; }
+      .input-row { display: flex; gap: 10px; margin-bottom: 16px; }
       .input-row input {
         flex: 1;
         min-width: 0;
         height: 40px;
-        padding: 0 12px;
-        border: 1px solid #e2e8f0;
+        padding: 7px 11px;
+        border: 1px solid #d9d9d9;
         border-radius: 10px;
         outline: none;
-        font-size: 14px;
+        color: rgba(0, 0, 0, 0.88);
+        font: inherit;
+        font-size: 16px;
       }
-      .input-row input:focus { border-color: #6366f1; }
+      .input-row input::placeholder { color: rgba(0, 0, 0, 0.25); }
       .input-row button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         height: 40px;
-        padding: 0 14px;
-        border: none;
+        padding: 0 15px;
+        border: 1px solid transparent;
         border-radius: 10px;
         background: #6366f1;
+        box-shadow: 0 2px 0 rgba(99, 102, 241, 0.1);
         color: #fff;
-        font-size: 14px;
-        cursor: pointer;
+        font: inherit;
+        font-size: 16px;
       }
-      .input-row button:disabled { background: #e2e8f0; color: #94a3b8; }
-      .tabs {
-        display: flex;
-        margin: 14px 0;
-        padding: 3px;
-        border-radius: 10px;
-        background: #f1f5f9;
-      }
+      .input-row button:disabled { border-color: #d9d9d9; background: rgba(0, 0, 0, 0.04); box-shadow: none; color: rgba(0, 0, 0, 0.25); }
+      .tabs { display: flex; margin-bottom: 16px; padding: 2px; border-radius: 10px; background: #f5f5f5; }
       .tabs button {
         flex: 1;
-        height: 30px;
+        min-width: 0;
+        height: 28px;
+        padding: 0 11px;
         border: none;
         border-radius: 8px;
         background: transparent;
-        color: #64748b;
-        font-size: 13px;
-        cursor: pointer;
+        color: rgba(0, 0, 0, 0.65);
+        font: inherit;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
-      .tabs button.on { background: #fff; color: #1e293b; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
-      .group { margin-top: 8px; }
+      .tabs button.on {
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.02);
+        color: rgba(0, 0, 0, 0.88);
+      }
+      .groups { display: flex; flex-direction: column; gap: 14px; }
       .day {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         width: 100%;
-        margin-bottom: 6px;
-        padding: 0 2px;
+        margin-bottom: 8px;
+        padding: 0 4px;
         border: none;
         background: none;
+        color: #334155;
+        font: inherit;
         text-align: left;
-        cursor: pointer;
       }
-      .day b { font-size: 13px; }
-      .day em { font-style: normal; font-size: 12px; color: #94a3b8; }
-      .day .count {
+      .day-arrow { font-size: 11px; color: #94a3b8; transition: transform 0.2s; }
+      .day-arrow.open { transform: rotate(90deg); }
+      .day-label { font-size: 14px; font-weight: 600; }
+      .day-detail { font-size: 13px; color: #94a3b8; }
+      .day-count {
         margin-left: auto;
-        min-width: 18px;
-        padding: 0 6px;
-        border-radius: 9px;
+        min-width: 20px;
+        padding: 0 7px;
+        border-radius: 10px;
         background: #eef2ff;
         color: #6366f1;
         font-size: 12px;
-        line-height: 18px;
+        line-height: 20px;
         text-align: center;
       }
-      .arrow { font-size: 10px; color: #94a3b8; transition: transform 0.25s; }
-      .arrow.open { transform: rotate(90deg); }
       .list {
         margin: 0;
         padding: 0;
@@ -142,27 +200,48 @@
         overflow: hidden;
       }
       .list li {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 12px;
+        padding: 12px;
         border-bottom: 1px solid #f1f3f8;
         background: #fff;
         transition: transform 0.45s ease, box-shadow 0.2s;
       }
       .list li:last-child { border-bottom: none; }
       .list li.dragging { position: relative; z-index: 1; box-shadow: 0 8px 24px rgba(99, 102, 241, 0.18); }
-      .handle { color: #cbd5e1; letter-spacing: -1px; }
-      .body { flex: 1; min-width: 0; }
-      .body strong { display: block; font-size: 14px; font-weight: 500; }
-      .body span { font-size: 11px; color: #94a3b8; }
-      .done strong { color: #94a3b8; text-decoration: line-through; }
-      .icons { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 15px; }
-      .icon.hot { color: #6366f1; }
+      .op { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+      .handle { font-size: 16px; color: #cbd5e1; transition: color 0.2s; }
+      .dragging .handle { color: #6366f1; }
+      .body { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+      .content { font-size: 15px; color: #1e293b; word-break: break-all; }
+      .done .content { color: #94a3b8; text-decoration: line-through; }
+      .meta { font-size: 12px; color: #94a3b8; }
+      .extra { display: flex; flex-wrap: wrap; gap: 2px 10px; font-size: 12px; }
+      .x-repeat { color: #db2777; white-space: nowrap; }
+      .x-time { color: #0d9488; white-space: nowrap; }
+      .x-place { color: #6366f1; word-break: break-all; }
+      .body input.edit {
+        width: 100%;
+        height: 24px;
+        padding: 0 7px;
+        border: 1px solid #6366f1;
+        border-radius: 8px;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        outline: none;
+        color: #1e293b;
+        font: inherit;
+        font-size: 15px;
+      }
+      .acts { display: grid; grid-template-columns: repeat(4, auto); place-items: center; gap: 0 2px; }
+      .act { display: inline-flex; padding: 6px; font-size: 20px; color: #94a3b8; transition: color 0.2s, transform 0.2s; }
+      .act.hot { transform: scale(1.15); }
+      .act-check.hot, .act-undo.hot { color: #22c55e; }
+      .act-edit.hot, .act-move.hot, .act-place.hot, .act-place.set { color: #6366f1; }
+      .act-time.hot, .act-time.set { color: #0d9488; }
+      .act-repeat.set { color: #db2777; }
+      .act-del.hot { color: #ef4444; }
       .dot {
         flex-shrink: 0;
-        width: 11px;
-        height: 11px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
         background: var(--dot);
         box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
@@ -174,40 +253,66 @@
       .list li:nth-child(7n + 5) { --dot: #007fff; }
       .list li:nth-child(7n + 6) { --dot: #0000ff; }
       .list li:nth-child(7n + 7) { --dot: #7f00ff; }
-      .list li.compact { padding: 7px 12px; }
-      .list li.compact .body span { display: none; }
+      .list li.compact .act, .list li.compact .meta { display: none; }
+      .notice {
+        position: absolute;
+        z-index: 4;
+        top: 8px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.2);
+        opacity: 0;
+        transform: translateY(-14px);
+        transition: opacity 0.3s, transform 0.3s;
+        pointer-events: none;
+      }
+      .notice.show { opacity: 1; transform: none; }
+      .notice img { width: 32px; height: 32px; border-radius: 8px; }
+      .notice b { display: block; font-size: 12px; }
+      .notice span { font-size: 12px; color: #475569; }
       .rank {
-        margin-bottom: 14px;
-        padding: 10px 12px 8px;
+        margin-bottom: 18px;
+        padding: 12px 14px 10px;
         border: 1px solid #eef0f5;
         border-radius: 14px;
         background: linear-gradient(135deg, #fff 0%, #fafaff 100%);
       }
-      .rank-head { display: flex; align-items: center; gap: 6px; }
-      .rank-head svg { width: 16px; height: 16px; color: var(--rank-color); transition: color 0.3s; }
-      .rank-name { font-size: 14px; font-weight: 700; color: var(--rank-color); transition: color 0.3s; }
-      .rank-stars { margin-left: auto; color: #f59e0b; font-size: 13px; letter-spacing: 1px; }
+      .rank-head { display: flex; align-items: center; gap: 8px; }
+      .rank-badge { font-size: 18px; color: var(--rank-color); transition: color 0.3s; }
+      .rank-name { font-size: 15px; font-weight: 700; color: var(--rank-color); transition: color 0.3s; }
+      .rank-stars { display: flex; align-items: center; gap: 2px; margin-left: auto; color: #f59e0b; font-size: 14px; }
       .rank-stars .off { color: #e2e8f0; }
-      .bar { height: 6px; margin: 6px 0 4px; border-radius: 3px; background: #f1f5f9; overflow: hidden; }
-      .bar i { display: block; height: 100%; border-radius: 3px; background: var(--rank-color); transition: width 0.6s ease, background 0.3s; }
+      .bar { height: 6px; margin: 8px 0 6px; border-radius: 100px; background: rgba(0, 0, 0, 0.06); overflow: hidden; }
+      .bar i { display: block; height: 100%; border-radius: 100px; background: var(--rank-color); transition: width 0.6s ease, background 0.3s; }
       .bar.reset i { transition: none; }
-      .rank-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 10px; font-size: 11px; color: #94a3b8; }
+      .rank-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: 12px; color: #94a3b8; }
       .toast {
-        position: absolute;
-        z-index: 4;
-        top: -14px;
+        position: fixed;
+        z-index: 8;
+        top: 8px;
         left: 50%;
-        padding: 6px 14px;
-        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-radius: 10px;
         background: #fff;
-        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
-        font-size: 13px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+        color: rgba(0, 0, 0, 0.88);
+        font-size: 14px;
         white-space: nowrap;
         opacity: 0;
         transform: translate(-50%, -8px);
         transition: opacity 0.25s, transform 0.25s;
         pointer-events: none;
       }
+      .toast .ai { font-size: 16px; color: #52c41a; }
       .toast.show { opacity: 1; transform: translate(-50%, 0); }
       .coin-burst { position: fixed; z-index: 10; width: 0; height: 0; pointer-events: none; }
       .coin {
@@ -248,31 +353,87 @@
       .popover {
         position: absolute;
         z-index: 2;
-        width: 220px;
-        padding: 10px;
-        border-radius: 12px;
+        padding: 12px;
+        border-radius: 10px;
         background: #fff;
-        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+        color: rgba(0, 0, 0, 0.88);
+        font-size: 14px;
         opacity: 0;
         transform: translateY(-6px);
         pointer-events: none;
         transition: opacity 0.25s, transform 0.25s;
       }
       .popover.show { opacity: 1; transform: none; }
-      .popover header { margin-bottom: 6px; text-align: center; font-size: 12px; font-weight: 600; }
-      .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
-      .grid i, .grid b {
+      .popover::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: var(--arrow, 50%);
+        width: 8px;
+        height: 8px;
+        margin-left: -4px;
+        background: #fff;
+        box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.06);
+        transform: rotate(45deg);
+      }
+      .editor { display: flex; flex-direction: column; gap: 8px; }
+      .field {
         display: flex;
         align-items: center;
-        justify-content: center;
-        height: 22px;
-        border-radius: 6px;
-        font-style: normal;
-        font-size: 11px;
-        font-weight: 500;
+        gap: 4px;
+        height: 32px;
+        padding: 4px 11px;
+        border: 1px solid #6366f1;
+        border-radius: 10px;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
       }
-      .grid i { color: #94a3b8; }
-      .grid b.pick { background: #6366f1; color: #fff; }
+      .field input { flex: 1; min-width: 0; padding: 0; border: none; outline: none; background: none; color: inherit; font: inherit; }
+      .field input::placeholder { color: rgba(0, 0, 0, 0.25); }
+      .pop-buttons { display: flex; justify-content: flex-end; gap: 6px; }
+      .btn-primary, .btn-danger { height: 24px; padding: 0 7px; border-radius: 8px; font-size: 14px; line-height: 24px; }
+      .btn-primary { background: #6366f1; color: #fff; }
+      .btn-danger { color: #ff4d4f; }
+      .checks { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 6px; }
+      .check { display: inline-flex; align-items: center; gap: 8px; }
+      .check i {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .check.on i { border-color: #6366f1; background: #6366f1; }
+      .check.on i::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 4.5px;
+        width: 4px;
+        height: 8px;
+        border: 2px solid #fff;
+        border-top: 0;
+        border-left: 0;
+        transform: rotate(45deg);
+      }
+      .pop-hint { margin: 0; font-size: 12px; line-height: 1.5; color: #64748b; }
+      .cal-head { display: flex; justify-content: space-between; align-items: center; padding: 4px 0 8px; }
+      .cal-title { font-size: 14px; font-weight: 600; color: #334155; }
+      .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+      .cal-grid i { font-style: normal; line-height: 24px; }
+      .cal-grid b { display: flex; justify-content: center; padding: 4px 0; font-weight: 400; }
+      .cal-grid b span {
+        min-width: 24px;
+        height: 24px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        line-height: 22px;
+        transition: background 0.2s, color 0.2s;
+      }
+      .cal-grid b.out { color: rgba(0, 0, 0, 0.25); }
+      .cal-grid b.today span { border-color: #6366f1; }
+      .cal-grid b.pick span { background: #6366f1; color: #fff; }
       .cursor {
         position: absolute;
         z-index: 5;
@@ -489,8 +650,10 @@
   <body>
     <div class="wrap">
       <div class="lang" id="lang">
-        <button type="button" data-lang="zh">中文</button>
-        <button type="button" data-lang="en">EN</button>
+        <div class="lang-inner">
+          <button type="button" data-lang="zh">中文</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
       </div>
       <h1 data-i18n="title"></h1>
       <div class="cta">
@@ -499,17 +662,26 @@
       </div>
       <div class="stage" id="stage">
         <div class="card">
+          <header class="app-head">
+            <div class="app-title">Todo List</div>
+            <p class="app-sub" id="tasksLeft"></p>
+            <div class="account">
+              <span>me@example.com</span>
+              <span class="tbtn"><span data-icon="question"></span><span data-i18n="guideButton"></span></span>
+              <span class="tbtn" id="bell"></span>
+              <span class="tbtn"><span data-icon="logout"></span><span data-i18n="logOutButton"></span></span>
+            </div>
+          </header>
           <div class="rank" id="rank">
             <div class="rank-head">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M7 3h10v2h4v3a5 5 0 0 1-4.6 5A5 5 0 0 1 13 15.9V19h3v2H8v-2h3v-3.1A5 5 0 0 1 7.6 13 5 5 0 0 1 3 8V5h4V3Zm0 4H5v1a3 3 0 0 0 2 2.8V7Zm10 0v3.8A3 3 0 0 0 19 8V7h-2Z" />
-              </svg>
+              <span class="rank-badge" data-icon="trophy"></span>
               <span class="rank-name" id="rankName"></span>
               <span class="rank-stars" id="rankStars"></span>
             </div>
             <div class="bar" id="rankBar"><i></i></div>
             <div class="rank-foot" id="rankFoot"></div>
           </div>
+          <p class="tip"><span data-icon="bulb"></span> <span data-i18n="tip"></span></p>
           <div class="input-row">
             <input id="task" readonly />
             <button id="add" type="button" disabled></button>
@@ -519,13 +691,14 @@
             <button type="button"></button>
             <button type="button"></button>
           </div>
-          <div id="groups"></div>
+          <div class="groups" id="groups"></div>
         </div>
         <div class="toast" id="toast"></div>
-        <div class="popover" id="popover">
-          <header id="month"></header>
-          <div class="grid" id="grid"></div>
+        <div class="notice" id="notice">
+          <img src="/icons/icon-192.png" alt="" />
+          <div><b id="noticeTitle"></b><span id="noticeBody"></span></div>
         </div>
+        <div class="popover" id="popover"></div>
         <div class="cursor" id="cursor"></div>
       </div>
       <div class="caption">
@@ -643,6 +816,7 @@
           <p id="installCaption"></p>
         </div>
         <p class="note" data-i18n-html="desktopNote"></p>
+        <p class="note" data-i18n-html="remindNote"></p>
         <p class="note" data-i18n-html="offlineNote"></p>
       </section>
     </div>
@@ -652,36 +826,60 @@
       const I18N = {
         zh: {
           pageTitle: "怎么用 Todo List",
-          title: "30 秒看懂 Todo List",
+          title: "1 分钟看懂 Todo List",
           signUp: "立即注册 →",
           logIn: "已有账号？登录",
           replay: "重新播放",
           installTitle: "添加到手机主屏幕",
           steps: [
             "在输入框写下任务，点「添加」，它会归到今天",
-            "点对勾完成任务，爆出金币 +10 分；每 50 分一颗星，星星攒满就晋级",
-            "在「已完成」里点撤销可以改回来，积分也会扣回",
+            "点 {check} 完成任务，爆出金币 +10 分；每 50 分一颗星，星星攒满就晋级",
+            "在「已完成」里点 {undo} 改回进行中，积分也会扣回；删掉的任务可以在「已删除」里恢复",
+            "点 {edit} 直接修改内容（电脑上也可以双击文字），回车保存，Esc 取消",
+            "点 {place} 填写地点、点 {time} 设置时间，都会显示在任务下方",
+            "点 {repeat} 勾选每周几，本周剩下的几天马上加上，之后每周日自动添加下一周的",
+            "点顶部的 {bell} 提醒并允许通知，设了时间的任务开始前 15 分钟会通知你",
             "按住任务任意位置拖动，调整同一天里的顺序（手机上长按一下再拖）",
-            "日历左边的圆点按当天顺序显示红橙黄绿蓝靛紫，第 8 个起重新循环",
-            "点日历图标，把任务挪到别的日期",
+            "按钮旁的圆点按当天顺序显示红橙黄绿蓝靛紫，第 8 个起重新循环",
+            "点 {move} 把任务挪到别的日期",
             "今天以外的日期默认收起，点标题可以展开",
           ],
+          guideButton: "使用说明",
+          logOutButton: "退出",
+          tip: "先做重要且紧急的事，再做重要但不紧急的事，尽量减少不重要的事。",
           ui: {
+            tasksLeft: (n) => `还有 ${n} 个任务`,
+            movedTo: (d) => `已移到 10月${d}日`,
             placeholder: "要做点什么？",
             add: "添加",
+            save: "保存",
             tabs: ["进行中", "已完成", "已删除"],
             today: "今天",
             yesterday: "昨天",
             tomorrow: "明天",
             day: (d) => `10月${d}日`,
+            dated: (d) => `10月${d}日 ${["周日", "周一", "周二", "周三", "周四", "周五", "周六"][(d + 3) % 7]}`,
             added: (time) => `添加于 ${time}`,
             done: (time) => `完成于 ${time}`,
             month: "2026年10月",
             weekdays: ["一", "二", "三", "四", "五", "六", "日"],
             firstDayOffset: 3,
+            locationPlaceholder: "在哪里做？如：公司、超市",
+            timePlaceholder: "几点？",
+            place: "超市",
+            repeatDays: ["一", "二", "三", "四", "五", "六", "日"],
+            repeatText: (days) => `每周${days.join("、")}`,
+            repeatHint: "本周剩下的几天会马上加上，之后每周日自动添加下一周的，沿用这条任务的内容、时间和地点。",
+            repeatSaved: (text) => `已设为${text}重复`,
+            bell: ["提醒", "提醒已开"],
+            enabledTitle: "提醒已开启",
+            enabledBody: "设了时间的任务会在开始前 15 分钟通知你。",
+            startsIn: "15 分钟后开始",
             tasks: {
               book: "读一本书",
               milk: "买牛奶",
+              milkMore: "和面包",
+              english: "英语课",
               dentist: "预约牙医",
               report: "写周报",
               bike: "修自行车",
@@ -694,6 +892,7 @@
             toNextStar: (tasks, points) => `再完成 ${tasks} 个任务升星 · ${points} 分`,
             next: (name) => `下一段位：${name}`,
             promoted: (name) => `晋级 ${name}！`,
+            starUp: "升星 ⭐",
             tierInfo: (divisions, stars) => `${divisions} 个小段 · 每段 ${stars} 星`,
             kingFrom: (from) => `${from} 星起`,
           },
@@ -711,7 +910,7 @@
               "主屏幕出现 Todo List 图标，点开就是全屏应用",
             ],
             android: [
-              "用 Chrome 打开应用，点右上角 ⋮（也可以点应用顶部的 Install app）",
+              "用 Chrome 打开应用，点右上角 ⋮（也可以点应用顶部的「安装应用」）",
               "在菜单里选「安装应用」",
               "在弹窗中点「安装」",
               "主屏幕出现 Todo List 图标，点开就是全屏应用",
@@ -737,41 +936,66 @@
           music: "音乐",
           calendar: "日历",
           settings: "设置",
-          desktopNote: "电脑上用 Chrome 或 Edge：点地址栏右侧的安装图标，<br />或点应用顶部的 Install app 按钮。",
-          offlineNote: "📶 没网也能用：联网打开过一次后，断网时照样能查看、添加和修改任务，<br />修改先存在本机，联网后自动同步到你的其他设备。",
+          desktopNote: "电脑上用 Chrome 或 Edge：点地址栏右侧的安装图标，<br />或点应用顶部的「安装应用」按钮。",
+          remindNote: "{bell} 提醒要在每台设备上分别开启，再点一次关闭。<br />iPhone 需要先添加到主屏幕（iOS 16.4 以上），再从主屏幕打开开启。",
+          offlineNote: "没网也能用：打开过一次后再打开就是秒开，断网时照样能查看、添加和修改任务。<br />修改先存在本机，联网后自动同步到你的其他设备；顶部会提示离线、待同步条数或同步失败。",
         },
         en: {
           pageTitle: "How to use Todo List",
-          title: "Todo List in 30 seconds",
+          title: "Todo List in a minute",
           signUp: "Sign up now →",
           logIn: "Have an account? Log in",
           replay: "Replay",
           installTitle: "Add to your home screen",
           steps: [
             "Type a task and tap Add — it goes under Today",
-            "Tap the check to finish a task: coins burst out, +10 points. Every 50 points is a star; fill the stars to rank up",
-            "Tap undo in Done to bring it back — the points are taken back too",
+            "Tap {check} to finish a task: coins burst out, +10 points. Every 50 points is a star; fill the stars to rank up",
+            "Tap {undo} in Done to make it active again — the points are taken back too. Deleted tasks can be restored from Deleted",
+            "Tap {edit} to edit the text (or double-click it on desktop); Enter saves, Esc cancels",
+            "Tap {place} to add a place and {time} to set a time; both show under the task",
+            "Tap {repeat} and tick weekdays: the rest of this week is added at once, then each Sunday adds the next week",
+            "Tap {bell} Reminders at the top and allow notifications to be reminded 15 minutes before tasks with a time",
             "Hold anywhere on a task and drag to reorder within a day (on phones, press briefly first)",
-            "The dot by the calendar follows the day's order in rainbow colors, starting over from the 8th task",
-            "Tap the calendar icon to move a task to another date",
+            "The dot by the buttons follows the day's order in rainbow colors, starting over from the 8th task",
+            "Tap {move} to move a task to another date",
             "Days other than today start collapsed — tap the header to expand",
           ],
+          guideButton: "Guide",
+          logOutButton: "Log out",
+          tip: "Do what's important and urgent first, then what's important but not urgent, and keep the unimportant to a minimum.",
           ui: {
+            tasksLeft: (n) => `${n} task${n === 1 ? "" : "s"} left`,
+            movedTo: (d) => `Moved to Oct ${d}`,
             placeholder: "What needs to be done?",
             add: "Add",
+            save: "Save",
             tabs: ["Active", "Done", "Deleted"],
             today: "Today",
             yesterday: "Yesterday",
             tomorrow: "Tomorrow",
             day: (d) => `Oct ${d}`,
+            dated: (d) => `${["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][(d + 3) % 7]}, Oct ${d}`,
             added: (time) => `Added ${time}`,
             done: (time) => `Done ${time}`,
             month: "October 2026",
             weekdays: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
             firstDayOffset: 4,
+            locationPlaceholder: "Where? e.g. office, supermarket",
+            timePlaceholder: "When?",
+            place: "Supermarket",
+            repeatDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            repeatText: (days) => `Every ${days.join(", ")}`,
+            repeatHint: "The rest of this week is added now, then each Sunday adds the week after, with this task's text, time and place.",
+            repeatSaved: (text) => `Repeats ${text.toLowerCase()}`,
+            bell: ["Reminders", "Reminders on"],
+            enabledTitle: "Reminders are on",
+            enabledBody: "You'll be notified 15 minutes before each task that has a time.",
+            startsIn: "Starts in 15 minutes",
             tasks: {
               book: "Read a book",
               milk: "Buy milk",
+              milkMore: " and bread",
+              english: "English class",
               dentist: "Call dentist",
               report: "Write report",
               bike: "Fix bike",
@@ -784,6 +1008,7 @@
             toNextStar: (tasks, points) => `${tasks} more task${tasks === 1 ? "" : "s"} to the next star · ${points} pts`,
             next: (name) => `Next: ${name}`,
             promoted: (name) => `Promoted to ${name}!`,
+            starUp: "New star ⭐",
             tierInfo: (divisions, stars) => `${divisions} divisions · ${stars} stars each`,
             kingFrom: (from) => `${from}★+`,
           },
@@ -828,7 +1053,8 @@
           calendar: "Calendar",
           settings: "Settings",
           desktopNote: "On desktop, use Chrome or Edge: click the install icon in the address bar,<br />or the Install app button at the top of the app.",
-          offlineNote: "📶 Works offline: once you've opened it online, you can view, add and edit tasks without a connection.<br />Changes are saved on the device and sync to your other devices when you're back online.",
+          remindNote: "{bell} Turn reminders on for each device; tap again to turn them off.<br />On iPhone, add the app to the Home Screen first (iOS 16.4+) and turn them on from there.",
+          offlineNote: "Works offline: after the first visit it opens instantly, and you can view, add and edit tasks without a connection.<br />Changes are saved on the device and sync to your other devices when you're back online; a bar at the top shows when you're offline, how many changes are waiting, or when a sync failed.",
         },
       };
       const LANGS = Object.keys(I18N);
@@ -842,10 +1068,44 @@
 
       $("dots").innerHTML = t().steps.map(() => "<i></i>").join("");
 
+      // The @ant-design/icons the app uses, copied from @ant-design/icons-svg.
+      const ANTD = "64 64 896 896";
+      const ICON_SVG = {
+        edit: [ANTD, "M257.7 752c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 000-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 009.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9zm67.4-174.4L687.8 215l73.3 73.3-362.7 362.6-88.9 15.7 15.6-89zM880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32z"],
+        place: [ANTD, "M854.6 289.1a362.49 362.49 0 00-79.9-115.7 370.83 370.83 0 00-118.2-77.8C610.7 76.6 562.1 67 512 67c-50.1 0-98.7 9.6-144.5 28.5-44.3 18.3-84 44.5-118.2 77.8A363.6 363.6 0 00169.4 289c-19.5 45-29.4 92.8-29.4 142 0 70.6 16.9 140.9 50.1 208.7 26.7 54.5 64 107.6 111 158.1 80.3 86.2 164.5 138.9 188.4 153a43.9 43.9 0 0022.4 6.1c7.8 0 15.5-2 22.4-6.1 23.9-14.1 108.1-66.8 188.4-153 47-50.4 84.3-103.6 111-158.1C867.1 572 884 501.8 884 431.1c0-49.2-9.9-97-29.4-142zM512 880.2c-65.9-41.9-300-207.8-300-449.1 0-77.9 31.1-151.1 87.6-206.3C356.3 169.5 431.7 139 512 139s155.7 30.5 212.4 85.9C780.9 280 812 353.2 812 431.1c0 241.3-234.1 407.2-300 449.1zm0-617.2c-97.2 0-176 78.8-176 176s78.8 176 176 176 176-78.8 176-176-78.8-176-176-176zm79.2 255.2A111.6 111.6 0 01512 551c-29.9 0-58-11.7-79.2-32.8A111.6 111.6 0 01400 439c0-29.9 11.7-58 32.8-79.2C454 338.6 482.1 327 512 327c29.9 0 58 11.6 79.2 32.8C612.4 381 624 409.1 624 439c0 29.9-11.6 58-32.8 79.2z"],
+        time: [ANTD, "M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z", "M686.7 638.6L544.1 535.5V288c0-4.4-3.6-8-8-8H488c-4.4 0-8 3.6-8 8v275.4c0 2.6 1.2 5 3.3 6.5l165.4 120.6c3.6 2.6 8.6 1.8 11.2-1.7l28.6-39c2.6-3.7 1.8-8.7-1.8-11.2z"],
+        repeat: ["0 0 1024 1024", "M136 552h63.6c4.4 0 8-3.6 8-8V288.7h528.6v72.6c0 1.9.6 3.7 1.8 5.2a8.3 8.3 0 0011.7 1.4L893 255.4c4.3-5 3.6-10.3 0-13.2L749.7 129.8a8.22 8.22 0 00-5.2-1.8c-4.6 0-8.4 3.8-8.4 8.4V209H199.7c-39.5 0-71.7 32.2-71.7 71.8V544c0 4.4 3.6 8 8 8zm752-80h-63.6c-4.4 0-8 3.6-8 8v255.3H287.8v-72.6c0-1.9-.6-3.7-1.8-5.2a8.3 8.3 0 00-11.7-1.4L131 768.6c-4.3 5-3.6 10.3 0 13.2l143.3 112.4c1.5 1.2 3.3 1.8 5.2 1.8 4.6 0 8.4-3.8 8.4-8.4V815h536.6c39.5 0 71.7-32.2 71.7-71.8V480c-.2-4.4-3.8-8-8.2-8z"],
+        move: [ANTD, "M880 184H712v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H384v-64c0-4.4-3.6-8-8-8h-56c-4.4 0-8 3.6-8 8v64H144c-17.7 0-32 14.3-32 32v664c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V216c0-17.7-14.3-32-32-32zm-40 656H184V460h656v380zM184 392V256h128v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h256v48c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8v-48h128v136H184z"],
+        check: [ANTD, "M699 353h-46.9c-10.2 0-19.9 4.9-25.9 13.3L469 584.3l-71.2-98.8c-6-8.3-15.6-13.3-25.9-13.3H325c-6.5 0-10.3 7.4-6.5 12.7l124.6 172.8a31.8 31.8 0 0051.7 0l210.6-292c3.9-5.3.1-12.7-6.4-12.7z", "M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z"],
+        checkFilled: [ANTD, "M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm193.5 301.7l-210.6 292a31.8 31.8 0 01-51.7 0L318.5 484.9c-3.8-5.3 0-12.7 6.5-12.7h46.9c10.2 0 19.9 4.9 25.9 13.3l71.2 98.8 157.2-218c6-8.3 15.6-13.3 25.9-13.3H699c6.5 0 10.3 7.4 6.5 12.7z"],
+        undo: [ANTD, "M511.4 124C290.5 124.3 112 303 112 523.9c0 128 60.2 242 153.8 315.2l-37.5 48c-4.1 5.3-.3 13 6.3 12.9l167-.8c5.2 0 9-4.9 7.7-9.9L369.8 727a8 8 0 00-14.1-3L315 776.1c-10.2-8-20-16.7-29.3-26a318.64 318.64 0 01-68.6-101.7C200.4 609 192 567.1 192 523.9s8.4-85.1 25.1-124.5c16.1-38.1 39.2-72.3 68.6-101.7 29.4-29.4 63.6-52.5 101.7-68.6C426.9 212.4 468.8 204 512 204s85.1 8.4 124.5 25.1c38.1 16.1 72.3 39.2 101.7 68.6 29.4 29.4 52.5 63.6 68.6 101.7 16.7 39.4 25.1 81.3 25.1 124.5s-8.4 85.1-25.1 124.5a318.64 318.64 0 01-68.6 101.7c-7.5 7.5-15.3 14.5-23.4 21.2a7.93 7.93 0 00-1.2 11.1l39.4 50.5c2.8 3.5 7.9 4.1 11.4 1.3C854.5 760.8 912 649.1 912 523.9c0-221.1-179.4-400.2-400.6-399.9z"],
+        del: [ANTD, "M360 184h-8c4.4 0 8-3.6 8-8v8h304v-8c0 4.4 3.6 8 8 8h-8v72h72v-80c0-35.3-28.7-64-64-64H352c-35.3 0-64 28.7-64 64v80h72v-72zm504 72H160c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h60.4l24.7 523c1.6 34.1 29.8 61 63.9 61h454c34.2 0 62.3-26.8 63.9-61l24.7-523H888c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM731.3 840H292.7l-24.2-512h487l-24.2 512z"],
+        holder: [ANTD, "M300 276.5a56 56 0 1056-97 56 56 0 00-56 97zm0 284a56 56 0 1056-97 56 56 0 00-56 97zM640 228a56 56 0 10112 0 56 56 0 00-112 0zm0 284a56 56 0 10112 0 56 56 0 00-112 0zM300 844.5a56 56 0 1056-97 56 56 0 00-56 97zM640 796a56 56 0 10112 0 56 56 0 00-112 0z"],
+        right: [ANTD, "M765.7 486.8L314.9 134.7A7.97 7.97 0 00302 141v77.3c0 4.9 2.3 9.6 6.1 12.6l360 281.1-360 281.1c-3.9 3-6.1 7.7-6.1 12.6V883c0 6.7 7.7 10.4 12.9 6.3l450.8-352.1a31.96 31.96 0 000-50.4z"],
+        left: [ANTD, "M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8a31.86 31.86 0 000 50.3l450.8 352.1c5.3 4.1 12.9.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z"],
+        bell: [ANTD, "M816 768h-24V428c0-141.1-104.3-257.7-240-277.1V112c0-22.1-17.9-40-40-40s-40 17.9-40 40v38.9c-135.7 19.4-240 136-240 277.1v340h-24c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h216c0 61.8 50.2 112 112 112s112-50.2 112-112h216c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM512 888c-26.5 0-48-21.5-48-48h96c0 26.5-21.5 48-48 48zM304 768V428c0-55.6 21.6-107.8 60.9-147.1S456.4 220 512 220c55.6 0 107.8 21.6 147.1 60.9S720 372.4 720 428v340H304z"],
+        bellFilled: [ANTD, "M816 768h-24V428c0-141.1-104.3-257.8-240-277.2V112c0-22.1-17.9-40-40-40s-40 17.9-40 40v38.8C336.3 170.2 232 286.9 232 428v340h-24c-17.7 0-32 14.3-32 32v32c0 4.4 3.6 8 8 8h216c0 61.8 50.2 112 112 112s112-50.2 112-112h216c4.4 0 8-3.6 8-8v-32c0-17.7-14.3-32-32-32zM512 888c-26.5 0-48-21.5-48-48h96c0 26.5-21.5 48-48 48z"],
+        bulb: [ANTD, "M632 888H392c-4.4 0-8 3.6-8 8v32c0 17.7 14.3 32 32 32h192c17.7 0 32-14.3 32-32v-32c0-4.4-3.6-8-8-8zM512 64c-181.1 0-328 146.9-328 328 0 121.4 66 227.4 164 284.1V792c0 17.7 14.3 32 32 32h264c17.7 0 32-14.3 32-32V676.1c98-56.7 164-162.7 164-284.1 0-181.1-146.9-328-328-328zm127.9 549.8L604 634.6V752H420V634.6l-35.9-20.8C305.4 568.3 256 484.5 256 392c0-141.4 114.6-256 256-256s256 114.6 256 256c0 92.5-49.4 176.3-128.1 221.8z"],
+        trophy: [ANTD, "M868 160h-92v-40c0-4.4-3.6-8-8-8H256c-4.4 0-8 3.6-8 8v40h-92a44 44 0 00-44 44v148c0 81.7 60 149.6 138.2 162C265.6 630.2 359 721.8 476 734.5v105.2H280c-17.7 0-32 14.3-32 32V904c0 4.4 3.6 8 8 8h512c4.4 0 8-3.6 8-8v-32.3c0-17.7-14.3-32-32-32H548V734.5C665 721.8 758.4 630.2 773.8 514 852 501.6 912 433.7 912 352V204a44 44 0 00-44-44zM248 439.6c-37.1-11.9-64-46.7-64-87.6V232h64v207.6zM840 352c0 41-26.9 75.8-64 87.6V232h64v120z"],
+        star: [ANTD, "M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 00.6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0046.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"],
+        starOutlined: [ANTD, "M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 00.6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0046.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3zM664.8 561.6l36.1 210.3L512 672.7 323.1 772l36.1-210.3-152.8-149L417.6 382 512 190.7 606.4 382l211.2 30.7-152.8 148.9z"],
+        plus: [ANTD, "M482 152h60q8 0 8 8v704q0 8-8 8h-60q-8 0-8-8V160q0-8 8-8z", "M192 474h672q8 0 8 8v60q0 8-8 8H160q-8 0-8-8v-60q0-8 8-8z"],
+        question: [ANTD, "M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z", "M623.6 316.7C593.6 290.4 554 276 512 276s-81.6 14.5-111.6 40.7C369.2 344 352 380.7 352 420v7.6c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8V420c0-44.1 43.1-80 96-80s96 35.9 96 80c0 31.1-22 59.6-56.1 72.7-21.2 8.1-39.2 22.3-52.1 40.9-13.1 19-19.9 41.8-19.9 64.9V620c0 4.4 3.6 8 8 8h48c4.4 0 8-3.6 8-8v-22.7a48.3 48.3 0 0130.9-44.8c59-22.7 97.1-74.7 97.1-132.5.1-39.3-17.1-76-48.3-103.3zM472 732a40 40 0 1080 0 40 40 0 10-80 0z"],
+        logout: [ANTD, "M868 732h-70.3c-4.8 0-9.3 2.1-12.3 5.8-7 8.5-14.5 16.7-22.4 24.5a353.84 353.84 0 01-112.7 75.9A352.8 352.8 0 01512.4 866c-47.9 0-94.3-9.4-137.9-27.8a353.84 353.84 0 01-112.7-75.9 353.28 353.28 0 01-76-112.5C167.3 606.2 158 559.9 158 512s9.4-94.2 27.8-137.8c17.8-42.1 43.4-80 76-112.5s70.5-58.1 112.7-75.9c43.6-18.4 90-27.8 137.9-27.8 47.9 0 94.3 9.3 137.9 27.8 42.2 17.8 80.1 43.4 112.7 75.9 7.9 7.9 15.3 16.1 22.4 24.5 3 3.7 7.6 5.8 12.3 5.8H868c6.3 0 10.2-7 6.7-12.3C798 160.5 663.8 81.6 511.3 82 271.7 82.6 79.6 277.1 82 516.4 84.4 751.9 276.2 942 512.4 942c152.1 0 285.7-78.8 362.3-197.7 3.4-5.3-.4-12.3-6.7-12.3zm88.9-226.3L815 393.7c-5.3-4.2-13-.4-13 6.3v76H488c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h314v76c0 6.7 7.8 10.5 13 6.3l141.9-112a8 8 0 000-12.6z"],
+      };
+
+      function svg(name, cls = "") {
+        const [viewBox, ...paths] = ICON_SVG[name];
+        return `<svg class="ai ${cls}" viewBox="${viewBox}" aria-hidden="true">${paths.map((d) => `<path d="${d}" />`).join("")}</svg>`;
+      }
+
+      /** Swaps {name} placeholders in copy for the matching icon. */
+      const withIcons = (text) => text.replace(/\{(\w+)\}/g, (_, name) => svg(name));
+
       function caption(index) {
         step = index;
         [...$("dots").children].forEach((dot, i) => dot.classList.toggle("on", i === index));
-        $("caption").textContent = t().steps[index];
+        $("caption").innerHTML = withIcons(t().steps[index]);
       }
 
       function tabs(active, counts) {
@@ -854,14 +1114,98 @@
           button.classList.toggle("on", i === active);
           button.textContent = `${t().ui.tabs[i]} (${counts[i]})`;
         });
+        $("tasksLeft").textContent = t().ui.tasksLeft(counts[0]);
       }
 
+      // Same buttons, order and colors as components/TodoList.tsx.
       function task(text, meta, options = {}) {
+        const acts = ["edit", "place", "time", "repeat", "move", options.done ? "undo" : "check", "del"];
+        const set = { place: options.place, time: options.time, repeat: options.repeat };
+        const extra = [
+          options.repeat && `<span class="x-repeat">${svg("repeat")} ${options.repeat}</span>`,
+          options.time && `<span class="x-time">${svg("time")} ${options.time}</span>`,
+          options.place && `<span class="x-place">${svg("place")} ${options.place}</span>`,
+        ].filter(Boolean);
         return `<li class="${options.done ? "done" : ""} ${options.cls || ""}" ${options.id ? `id="${options.id}"` : ""}>
-          <span class="handle">⋮⋮</span>
-          <div class="body"><strong>${text}</strong><span>${meta}</span></div>
-          <span class="icons"><span class="dot"></span><span class="acts">${options.icons || "📅 ✓ 🗑"}</span></span>
+          <div class="op">
+            ${svg("holder", "handle")}
+            <div class="body">
+              <span class="content">${text}</span>
+              ${extra.length ? `<span class="extra">${extra.join("")}</span>` : ""}
+              <span class="meta">${meta}</span>
+            </div>
+            <div class="acts"><span class="dot"></span>${acts
+              .map((a) => `<span class="act act-${a} ${set[a] ? "set" : ""}" data-act="${a}">${svg(a)}</span>`)
+              .join("")}</div>
+          </div>
         </li>`;
+      }
+
+      const firstTask = () => $("groups").querySelector("li");
+
+      /** Taps one of a task's buttons, leaving it highlighted like the app's hover state. */
+      async function press(item, name) {
+        const icon = item.querySelector(`[data-act="${name}"]`);
+        icon.classList.add("hot");
+        await tap(icon);
+        return icon;
+      }
+
+      /** Shows an antd-style popover centered under `anchor`, kept inside the stage. */
+      function openPopover(anchor, html) {
+        const pop = $("popover");
+        const box = anchor.getBoundingClientRect();
+        const stage = $("stage").getBoundingClientRect();
+        pop.innerHTML = html;
+        const center = box.left - stage.left + box.width / 2;
+        const left = Math.min(Math.max(8, center - pop.offsetWidth / 2), stage.width - pop.offsetWidth - 8);
+        pop.style.top = `${box.bottom - stage.top + 10}px`;
+        pop.style.left = `${left}px`;
+        pop.style.setProperty("--arrow", `${center - left}px`);
+        pop.classList.add("show");
+      }
+
+      const closePopover = () => $("popover").classList.remove("show");
+
+      const popButtons = () => `<div class="pop-buttons"><span class="btn-primary" id="popSave">${t().ui.save}</span></div>`;
+
+      async function fillPlace(anchor, value) {
+        openPopover(
+          anchor,
+          `<div class="editor" style="width: 240px">
+            <label class="field">${svg("place")}<input readonly placeholder="${t().ui.locationPlaceholder}" /></label>
+            ${popButtons()}
+          </div>`,
+        );
+        const input = $("popover").querySelector("input");
+        await sleep(500);
+        for (const char of value) {
+          input.value += char;
+          await sleep(110);
+        }
+        await tap($("popSave"));
+        closePopover();
+      }
+
+      async function fillTime(anchor, value) {
+        openPopover(
+          anchor,
+          `<div class="editor" style="width: 240px">
+            <label class="field"><input type="time" readonly /></label>
+            ${popButtons()}
+          </div>`,
+        );
+        await sleep(900);
+        $("popover").querySelector("input").value = value;
+        await sleep(400);
+        await tap($("popSave"));
+        closePopover();
+      }
+
+      let bellOn = false;
+      function setBell(on) {
+        bellOn = on;
+        $("bell").innerHTML = `${svg(on ? "bellFilled" : "bell", on ? "bell-on" : "")}<span>${t().ui.bell[on ? 1 : 0]}</span>`;
       }
 
       // Same ladder as lib/rank.ts: 10 points a task, 50 points a star.
@@ -924,8 +1268,8 @@
         $("rankName").textContent = rank.name;
         $("rankStars").innerHTML =
           rank.maxStars === null
-            ? `★ × ${rank.stars}`
-            : Array.from({ length: rank.maxStars }, (_, i) => `<span class="${i < rank.stars ? "" : "off"}">★</span>`).join("");
+            ? `${svg("star")} × ${rank.stars}`
+            : Array.from({ length: rank.maxStars }, (_, i) => (i < rank.stars ? svg("star") : svg("starOutlined", "off"))).join("");
         $("rankBar").firstElementChild.style.width = `${Math.round((progressOverride ?? rank.progress) * 100)}%`;
         $("rankFoot").innerHTML =
           `<span>${t().rank.toNextStar(Math.ceil(rank.toNext / 10), points)}</span>` + (rank.next ? `<span>${t().rank.next(rank.next)}</span>` : "");
@@ -941,8 +1285,9 @@
       }
 
       let toastTimer;
+      /** Same look as antd's message.success. */
       function toast(text) {
-        $("toast").textContent = text;
+        $("toast").innerHTML = `${svg("checkFilled")}<span>${text}</span>`;
         $("toast").classList.add("show");
         clearTimeout(toastTimer);
         toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800);
@@ -996,8 +1341,8 @@
         const open = options.open !== false;
         return `<section class="group">
           <button type="button" class="day" ${options.id ? `id="${options.id}"` : ""}>
-            ${options.arrow ? `<span class="arrow ${open ? "open" : ""}">❯</span>` : ""}
-            <b>${label}</b>${detail ? `<em>${detail}</em>` : ""}<span class="count">${count}</span>
+            ${options.arrow ? svg("right", `day-arrow ${open ? "open" : ""}`) : ""}
+            <span class="day-label">${label}</span>${detail ? `<span class="day-detail">${detail}</span>` : ""}<span class="day-count">${count}</span>
           </button>
           ${open ? `<ul class="list">${items}</ul>` : ""}
         </section>`;
@@ -1019,13 +1364,14 @@
       }
 
       async function sceneAdd() {
-        caption(0);
         const ui = t().ui;
         points = DEMO_POINTS;
         resetBar();
+        setBell(false);
+        $("notice").classList.remove("show");
         $("task").value = "";
         $("add").disabled = true;
-        $("popover").classList.remove("show");
+        closePopover();
         tabs(0, [0, 0, 0]);
         $("groups").innerHTML = group(ui.today, ui.day(7), 0, "");
         pointAt($("task"));
@@ -1044,16 +1390,14 @@
       }
 
       async function sceneDone() {
-        caption(1);
         const ui = t().ui;
-        const item = $("groups").querySelector("li");
-        item.querySelector(".acts").innerHTML = '📅 <span class="icon hot" id="check">✓</span> 🗑';
-        await tap($("check"));
-        burstCoins($("check"));
+        const item = firstTask();
+        burstCoins(await press(item, "check"));
         item.classList.add("done");
         const before = getRank(points);
         points += 10;
         const after = getRank(points);
+        const starUp = Math.floor(points / 50) > Math.floor((points - 10) / 50);
         if (after.name !== before.name) {
           renderRank(1);
           await sleep(650);
@@ -1061,6 +1405,7 @@
           toast(t().rank.promoted(after.name));
         } else {
           renderRank();
+          if (starUp) toast(t().rank.starUp);
         }
         await sleep(1500);
         tabs(1, [0, 1, 0]);
@@ -1068,15 +1413,14 @@
           ui.today,
           ui.day(7),
           1,
-          task(ui.tasks.book, `${ui.added("14:06")} · ${ui.done("14:07")}`, { done: true, icons: '📅 <span id="undo">↩</span>' }),
+          task(ui.tasks.book, `${ui.added("14:06")} · ${ui.done("14:07")}`, { done: true }),
         );
         await sleep(1000);
       }
 
       async function sceneUndo() {
-        caption(2);
         const ui = t().ui;
-        await tap($("undo"));
+        await press(firstTask(), "undo");
         points -= 10;
         resetBar();
         tabs(0, [1, 0, 0]);
@@ -1084,8 +1428,113 @@
         await sleep(1600);
       }
 
+      async function sceneEdit() {
+        const ui = t().ui;
+        tabs(0, [1, 0, 0]);
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(ui.tasks.milk, ui.added("09:30")));
+        await sleep(400);
+        const icon = await press(firstTask(), "edit");
+        const input = document.createElement("input");
+        input.className = "edit";
+        input.readOnly = true;
+        input.value = ui.tasks.milk;
+        firstTask().querySelector(".content").replaceWith(input);
+        await sleep(400);
+        for (const char of ui.tasks.milkMore) {
+          input.value += char;
+          await sleep(110);
+        }
+        await sleep(500);
+        icon.classList.remove("hot");
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(input.value, ui.added("09:30")));
+        await sleep(1200);
+      }
+
+      async function sceneDetails() {
+        const ui = t().ui;
+        const name = ui.tasks.milk + ui.tasks.milkMore;
+        const render = (details) => {
+          $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(name, ui.added("09:30"), details));
+          return firstTask();
+        };
+        tabs(0, [1, 0, 0]);
+        let item = render({});
+        await sleep(300);
+        await fillPlace(await press(item, "place"), ui.place);
+        item = render({ place: ui.place });
+        await sleep(700);
+        await fillTime(await press(item, "time"), "18:30");
+        render({ time: "18:30", place: ui.place });
+        await sleep(1500);
+      }
+
+      async function sceneRepeat() {
+        const ui = t().ui;
+        const name = ui.tasks.english;
+        // Today (Oct 7) is a Wednesday, so Wednesday starts ticked and Friday gets a copy this week.
+        const [wed, fri] = [3, 5];
+        tabs(0, [1, 0, 0]);
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(name, ui.added("08:00"), { time: "19:00" }));
+        await sleep(400);
+        const icon = await press(firstTask(), "repeat");
+        openPopover(
+          icon,
+          `<div class="editor" style="width: 260px">
+            <div class="checks">${ui.repeatDays
+              .map((d, i) => `<span class="check ${i + 1 === wed ? "on" : ""}" data-day="${i + 1}"><i></i>${d}</span>`)
+              .join("")}</div>
+            <p class="pop-hint">${ui.repeatHint}</p>
+            ${popButtons()}
+          </div>`,
+        );
+        await sleep(700);
+        const friday = $("popover").querySelector(`[data-day="${fri}"]`);
+        await tap(friday.firstElementChild);
+        friday.classList.add("on");
+        await sleep(400);
+        await tap($("popSave"));
+        closePopover();
+        const text = ui.repeatText([ui.repeatDays[wed - 1], ui.repeatDays[fri - 1]]);
+        toast(ui.repeatSaved(text));
+        const details = { repeat: text, time: "19:00" };
+        const today = group(ui.today, ui.day(7), 1, task(name, ui.added("08:00"), details));
+        tabs(0, [2, 0, 0]);
+        $("groups").innerHTML = today + group(ui.dated(9), "", 1, "", { arrow: true, open: false, id: "fri" });
+        await sleep(1000);
+        await tap($("fri"));
+        $("groups").innerHTML =
+          today + group(ui.dated(9), "", 1, task(name, ui.added(`${ui.day(7)} 14:08`), details), { arrow: true, id: "fri" });
+        await sleep(1600);
+      }
+
+      async function notify(title, body, ms) {
+        $("noticeTitle").textContent = title;
+        $("noticeBody").textContent = body;
+        $("notice").classList.add("show");
+        await sleep(ms);
+        $("notice").classList.remove("show");
+        await sleep(400);
+      }
+
+      async function sceneRemind() {
+        const ui = t().ui;
+        const name = ui.tasks.milk + ui.tasks.milkMore;
+        tabs(0, [1, 0, 0]);
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(name, ui.added("09:30"), { time: "18:30", place: ui.place }));
+        await sleep(400);
+        $("bell").classList.add("hot");
+        await tap($("bell"));
+        $("bell").classList.remove("hot");
+        setBell(true);
+        await sleep(500);
+        // Turning reminders on sends a test notification first.
+        await notify(ui.enabledTitle, ui.enabledBody, 2200);
+        $("cursor").style.transform = "translate(-40px, -40px)";
+        await sleep(900);
+        await notify(ui.startsIn, `18:30 ${name} · ${ui.place}`, 2600);
+      }
+
       async function sceneDrag() {
-        caption(3);
         const ui = t().ui;
         tabs(0, [2, 0, 0]);
         $("groups").innerHTML = group(
@@ -1117,7 +1566,6 @@
       }
 
       async function sceneRainbow() {
-        caption(4);
         const ui = t().ui;
         const names = ui.tasks.rainbow;
         $("cursor").style.transform = "translate(-40px, -40px)";
@@ -1132,33 +1580,45 @@
       }
 
       async function sceneMove() {
-        caption(5);
         const ui = t().ui;
         tabs(0, [1, 0, 0]);
-        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(ui.tasks.milk, ui.added("09:30"), { icons: '<span id="cal">📅</span> ✓ 🗑' }));
-        $("month").textContent = ui.month;
-        const cells = [...Array(ui.firstDayOffset).fill(""), ...Array.from({ length: 31 }, (_, i) => i + 1)];
-        $("grid").innerHTML =
-          ui.weekdays.map((day) => `<i>${day}</i>`).join("") +
-          cells.map((day) => (day ? `<b ${day === 8 ? 'class="pick" id="day8"' : ""}>${day}</b>` : "<b></b>")).join("");
+        $("groups").innerHTML = group(ui.today, ui.day(7), 1, task(ui.tasks.milk, ui.added("09:30")));
+        // antd's mini Calendar: six weeks with September and November days greyed out, the task's own day selected.
+        const offset = ui.firstDayOffset;
+        const cells = [
+          ...Array.from({ length: offset }, (_, i) => ({ day: 30 - offset + 1 + i, out: true })),
+          ...Array.from({ length: 31 }, (_, i) => ({ day: i + 1 })),
+          ...Array.from({ length: 42 - 31 - offset }, (_, i) => ({ day: i + 1, out: true })),
+        ];
+        const cell = ({ day, out }) => {
+          if (out) return `<b class="out"><span>${day}</span></b>`;
+          return `<b class="${day === 7 ? "today pick" : ""}" id="day${day}"><span>${day}</span></b>`;
+        };
         await sleep(300);
-        await tap($("cal"));
-        const cal = $("cal").getBoundingClientRect();
-        const stage = $("stage").getBoundingClientRect();
-        const pop = $("popover");
-        pop.style.top = `${cal.bottom - stage.top + 8}px`;
-        pop.style.left = `${Math.max(8, cal.right - stage.left - 220)}px`;
-        pop.classList.add("show");
+        openPopover(
+          await press(firstTask(), "move"),
+          `<div style="width: 300px">
+            <div class="cal-head">
+              <span class="tbtn square">${svg("left")}</span>
+              <span class="cal-title">${ui.month}</span>
+              <span class="tbtn square">${svg("right")}</span>
+            </div>
+            <div class="cal-grid">${ui.weekdays.map((day) => `<i>${day}</i>`).join("")}${cells.map(cell).join("")}</div>
+          </div>`,
+        );
         await sleep(500);
-        await tap($("day8"));
-        pop.classList.remove("show");
+        await tap($("day8").firstElementChild);
+        $("day7").classList.remove("pick");
+        $("day8").classList.add("pick");
+        await sleep(250);
+        closePopover();
+        toast(ui.movedTo(8));
         tabs(0, [1, 0, 0]);
         $("groups").innerHTML = group(ui.tomorrow, ui.day(8), 1, task(ui.tasks.milk, ui.added(`${ui.day(7)} 09:30`)));
         await sleep(1200);
       }
 
       async function sceneFold() {
-        caption(6);
         const ui = t().ui;
         tabs(0, [3, 0, 0]);
         const today = group(ui.today, ui.day(7), 1, task(ui.tasks.report, ui.added("09:30")));
@@ -1170,22 +1630,17 @@
         await sleep(1400);
       }
 
+      // In the same order as the captions in I18N steps.
+      const SCENES = [sceneAdd, sceneDone, sceneUndo, sceneEdit, sceneDetails, sceneRepeat, sceneRemind, sceneDrag, sceneRainbow, sceneMove, sceneFold];
+
       async function play() {
         const run = ++token;
         while (run === token) {
-          await sceneAdd();
-          if (run !== token) return;
-          await sceneDone();
-          if (run !== token) return;
-          await sceneUndo();
-          if (run !== token) return;
-          await sceneDrag();
-          if (run !== token) return;
-          await sceneRainbow();
-          if (run !== token) return;
-          await sceneMove();
-          if (run !== token) return;
-          await sceneFold();
+          for (const [index, scene] of SCENES.entries()) {
+            caption(index);
+            await scene();
+            if (run !== token) return;
+          }
         }
       }
 
@@ -1281,11 +1736,12 @@
         document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
         document.title = t().pageTitle;
         document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t()[el.dataset.i18n]));
-        document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = t()[el.dataset.i18nHtml]));
-        [...$("lang").children].forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
+        document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = withIcons(t()[el.dataset.i18nHtml])));
+        $("lang").querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
         $("task").placeholder = t().ui.placeholder;
-        $("add").textContent = `+ ${t().ui.add}`;
+        $("add").innerHTML = `${svg("plus")}<span>${t().ui.add}</span>`;
         tabs(...lastTabs);
+        setBell(bellOn);
         renderRank();
         renderRules();
         caption(step);
@@ -1300,6 +1756,7 @@
         applyLang();
       });
 
+      document.querySelectorAll("[data-icon]").forEach((el) => (el.outerHTML = svg(el.dataset.icon, el.className)));
       applyLang();
       play();
       playInstall();
