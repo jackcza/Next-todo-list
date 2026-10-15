@@ -429,6 +429,35 @@ button.todo-sync {
   color: #0d9488;
 }
 
+.todo-item-repeat {
+  color: #db2777;
+  white-space: nowrap;
+}
+
+.todo-item-actions .todo-action-repeat-set {
+  color: #db2777;
+}
+
+.todo-repeat-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 260px;
+}
+
+.todo-repeat-days {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 6px;
+}
+
+.todo-repeat-hint {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .todo-location-editor,
 .todo-time-editor {
   display: flex;

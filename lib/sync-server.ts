@@ -1,6 +1,7 @@
 import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/db";
-import { TODO_SELECT, toTodo, type Todo } from "@/lib/todo";
+import { applyRepeat } from "@/lib/recurrence";
+import { STATUS, TODO_SELECT, toTodo, type Todo } from "@/lib/todo";
 import { applyChanges, newTodo, parseOp, reorderPositions, type SyncOp } from "@/lib/todo-ops";
 
 export type SyncResult = { id: string | null; ok: true } | { id: string | null; ok: false; error: string };
@@ -74,13 +75,13 @@ export async function runSync(userId: string, rawOps: unknown[], since: bigint |
       );
 
       const touchedIds = ops.flatMap((op) =>
-        op.type === "create" ? [op.todo.id] : op.type === "update" ? [op.todoId] : [],
+        op.type === "create" ? [op.todo.id] : op.type === "update" || op.type === "repeat" ? [op.todoId] : [],
       );
-      const todos = new Map<string, StoredTodo>(
-        (
-          await tx.todo.findMany({ where: { id: { in: touchedIds } }, select: { ...TODO_SELECT, userId: true } })
-        ).map((row) => [row.id, { ...toTodo(row), userId: row.userId }]),
-      );
+      const load = async (ids: string[]) =>
+        (await tx.todo.findMany({ where: { id: { in: ids } }, select: { ...TODO_SELECT, userId: true } })).map(
+          (row): [string, StoredTodo] => [row.id, { ...toTodo(row), userId: row.userId }],
+        );
+      const todos = new Map<string, StoredTodo>(await load(touchedIds));
       const { _max } = await tx.todo.aggregate({ where: { userId }, _max: { position: true } });
       let lastPosition = _max.position ?? -1;
 
@@ -106,6 +107,15 @@ export async function runSync(userId: string, rawOps: unknown[], since: bigint |
           await tx.todo.update({ where: { id: todo.id }, data: toRow(todo) });
           todos.set(todo.id, { ...todo, userId });
           points += delta;
+          return null;
+        }
+
+        if (op.type === "repeat") {
+          const current = todos.get(op.todoId);
+          if (!current || current.userId !== userId || current.status === STATUS.IS_DELETE) return "Task not found.";
+          lastPosition = await applyRepeat(tx, userId, current, op.days, op.today, new Date(at), lastPosition);
+          // The change touches the task's other copies too; reload the ones later operations may use.
+          for (const [id, todo] of await load([...todos.keys()])) todos.set(id, todo);
           return null;
         }
 

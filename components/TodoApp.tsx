@@ -116,6 +116,15 @@ export default function TodoApp({ email, snapshot, vapidPublicKey }: TodoAppProp
     return true;
   };
 
+  const setRepeat = (todo: Todo, days: number[]) => {
+    engine.enqueue({ type: "repeat", todoId: todo.id, days, today: toDateKey() });
+    message.success(
+      days.length > 0
+        ? t.list.repeatSaved(t.list.repeatText(days.map((day) => t.list.weekdays[day - 1])))
+        : t.list.repeatStopped,
+    );
+  };
+
   const moveToDate = (todo: Todo, date: string) => {
     update(todo, { date });
     message.success(t.app.movedTo(dayjs(date).locale(DAYJS_LOCALE[locale]).format(t.date.short)));
@@ -210,6 +219,7 @@ export default function TodoApp({ email, snapshot, vapidPublicKey }: TodoAppProp
         onEdit={editTodo}
         onSetLocation={setLocation}
         onSetTime={setTime}
+        onSetRepeat={setRepeat}
       />
     </div>
   );

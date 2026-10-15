@@ -23,6 +23,25 @@ model User {
   todos             Todo[]
   appliedOps        AppliedOp[]
   pushSubscriptions PushSubscription[]
+  recurrences       Recurrence[]
+}
+
+/// A task that repeats every week. days: ISO weekdays, e.g. '1,3' for Monday and Wednesday.
+/// generatedThrough: the last day ('YYYY-MM-DD') its copies have been added for; /api/reminders/tick adds the
+/// coming week's on Sunday in the user's time zone. content, location and time are what new copies get.
+model Recurrence {
+  id               String   @id @default(uuid())
+  userId           String
+  days             String
+  content          String
+  location         String?
+  time             String?
+  generatedThrough String
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  todos            Todo[]
+
+  @@index([userId])
 }
 
 /// One per browser that turned reminders on. locale: language for the notification text.
@@ -74,6 +93,7 @@ model Session {
 /// version: taken from a sequence on every insert and update (a trigger handles updates), so /api/sync can return
 /// only the tasks that changed since the version a device last saw
 /// remindedFor: the 'YYYY-MM-DD HH:mm' a reminder was last sent for, so moving the task's time re-arms it
+/// recurrenceId, repeat: the weekly rule the task belongs to and a copy of its days, so devices can show it
 model Todo {
   id        String    @id @default(uuid())
   userId    String
@@ -89,10 +109,14 @@ model Todo {
   updatedAt DateTime @updatedAt
   version   BigInt   @default(autoincrement())
   remindedFor String?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repeat       String?
+  recurrenceId String?
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recurrence   Recurrence? @relation(fields: [recurrenceId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([userId, version])
+  @@index([recurrenceId, date])
 }
 
 /// Sync operations already applied, so a request retried after a dropped response doesn't apply one twice.

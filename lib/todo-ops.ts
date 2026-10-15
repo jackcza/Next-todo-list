@@ -38,7 +38,13 @@ export type NewTodo = {
 export type SyncOp =
   | { id: string; at: string; type: "create"; todo: NewTodo }
   | { id: string; at: string; type: "update"; todoId: string; changes: TodoChanges }
-  | { id: string; at: string; type: "reorder"; ids: string[] };
+  | { id: string; at: string; type: "reorder"; ids: string[] }
+  /**
+   * Makes the task repeat on these ISO weekdays (1 = Monday … 7 = Sunday), or stops it with an empty list.
+   * `today` is the user's local day: copies are added from then on, and future undone copies on dropped days
+   * are deleted.
+   */
+  | { id: string; at: string; type: "repeat"; todoId: string; days: number[]; today: string };
 
 /** Per request; a longer queue goes up in several requests. */
 export const MAX_SYNC_OPS = 20;
@@ -150,11 +156,83 @@ export function parseOp(raw: unknown): { op: SyncOp } | { id: string | null; err
     const ids = parseOrder(body.ids);
     return "error" in ids ? { id, error: ids.error } : { op: { id, at, type: "reorder", ids: ids.value } };
   }
+  if (body.type === "repeat") {
+    if (typeof body.todoId !== "string") return { id, error: "Task not found." };
+    if (!isDateKey(body.today)) return { id, error: "Invalid date." };
+    const days = body.days;
+    if (
+      !Array.isArray(days) ||
+      !days.every((day) => Number.isInteger(day) && day >= 1 && day <= 7) ||
+      new Set(days).size !== days.length
+    ) {
+      return { id, error: "Invalid repeat days." };
+    }
+    return {
+      op: { id, at, type: "repeat", todoId: body.todoId, days: [...days].sort((a, b) => a - b), today: body.today },
+    };
+  }
   return { id, error: "Invalid sync request." };
 }
 
+export function addDays(date: string, days: number) {
+  const value = new Date(`${date}T00:00:00Z`);
+  value.setUTCDate(value.getUTCDate() + days);
+  return value.toISOString().slice(0, 10);
+}
+
+/** 1 = Monday … 7 = Sunday. */
+export function isoWeekday(date: string) {
+  return new Date(`${date}T00:00:00Z`).getUTCDay() || 7;
+}
+
+/**
+ * The last day whose weekly copies should exist by `today`: the end of this week, or of next week from
+ * Sunday on, which is when the coming week's copies are added.
+ */
+export function repeatHorizon(today: string) {
+  const weekday = isoWeekday(today);
+  return addDays(today, weekday === 7 ? 7 : 7 - weekday);
+}
+
+export function parseDays(repeat: string | null | undefined) {
+  return repeat ? repeat.split(",").map(Number) : [];
+}
+
 export function newTodo(todo: NewTodo, at: string, position: number): Todo {
-  return { ...todo, status: STATUS.IS_CREATE, position, createdAt: at, doneAt: null, deletedAt: null };
+  return {
+    ...todo,
+    status: STATUS.IS_CREATE,
+    position,
+    repeat: null,
+    recurrenceId: null,
+    createdAt: at,
+    doneAt: null,
+    deletedAt: null,
+  };
+}
+
+/**
+ * The local prediction of a repeat change. The server also adds the new copies; those arrive with the next sync.
+ * Copies of the same rule get the new days, and future undone copies on dropped days are deleted.
+ */
+function applyRepeat(todos: Todo[], op: Extract<SyncOp, { type: "repeat" }>) {
+  const target = todos.find((todo) => todo.id === op.todoId);
+  if (!target) return todos;
+  const repeat = op.days.length > 0 ? op.days.join(",") : null;
+  if (!target.recurrenceId) return todos.map((todo) => (todo === target ? { ...todo, repeat } : todo));
+
+  const kept = new Set(op.days);
+  const dropped = new Set(parseDays(target.repeat).filter((day) => !kept.has(day)));
+  return todos.map((todo) => {
+    if (todo.recurrenceId !== target.recurrenceId) return todo;
+    const next = repeat ? { ...todo, repeat } : { ...todo, repeat: null, recurrenceId: null };
+    const remove =
+      todo.id !== target.id &&
+      todo.status === STATUS.IS_CREATE &&
+      todo.date > op.today &&
+      dropped.has(isoWeekday(todo.date));
+    return remove ? { ...next, status: STATUS.IS_DELETE, deletedAt: op.at } : next;
+  });
 }
 
 /**
@@ -210,6 +288,8 @@ export function projectOps(base: Todo[], basePoints: number, ops: SyncOp[]) {
       const { todo, delta } = applyChanges(todos[index], op.changes, op.at, nextPositionOf(todos));
       todos[index] = todo;
       points += delta;
+    } else if (op.type === "repeat") {
+      todos = applyRepeat(todos, op);
     } else {
       const positions = reorderPositions(todos, op.ids);
       todos = todos.map((todo) => ({ ...todo, position: positions.get(todo.id) ?? todo.position }));

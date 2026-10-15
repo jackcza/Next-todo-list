@@ -9,6 +9,7 @@ import {
   EnvironmentOutlined,
   HolderOutlined,
   LeftOutlined,
+  RetweetOutlined,
   RightOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
@@ -29,7 +30,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Button, Calendar, Empty, Input, Popover, Skeleton } from "antd";
+import { Button, Calendar, Checkbox, Empty, Input, Popover, Skeleton } from "antd";
 import dayjs from "dayjs";
 import { useId, useRef, useState, type SyntheticEvent } from "react";
 import HoverTooltip from "@/components/HoverTooltip";
@@ -37,6 +38,7 @@ import { useI18n } from "@/components/I18nProvider";
 import { burstCoins } from "@/lib/coinBurst";
 import { DAYJS_LOCALE, formatDay, formatStamp, toDateKey } from "@/lib/date";
 import { MAX_LOCATION_LENGTH, MAX_TODO_LENGTH, STATUS, isTimeKey, type Todo } from "@/lib/todo";
+import { isoWeekday, parseDays } from "@/lib/todo-ops";
 
 type TodoListProps = {
   todos: Todo[];
@@ -52,6 +54,8 @@ type TodoListProps = {
   onSetLocation: (todo: Todo, location: string | null) => Promise<boolean>;
   /** 'HH:mm', or null to clear it. */
   onSetTime: (todo: Todo, time: string | null) => Promise<boolean>;
+  /** ISO weekdays (1 = Monday); an empty list stops repeating. */
+  onSetRepeat: (todo: Todo, days: number[]) => void;
 };
 
 type TodoItemProps = {
@@ -61,6 +65,7 @@ type TodoItemProps = {
   onEdit: (todo: Todo, content: string) => Promise<boolean>;
   onSetLocation: (todo: Todo, location: string | null) => Promise<boolean>;
   onSetTime: (todo: Todo, time: string | null) => Promise<boolean>;
+  onSetRepeat: (todo: Todo, days: number[]) => void;
 };
 
 /** React events bubble out of portals, so this keeps presses inside the date picker popover from dragging the row. */
@@ -70,7 +75,9 @@ const stopDrag = {
   onKeyDown: (event: SyntheticEvent) => event.stopPropagation(),
 };
 
-function TodoItem({ item, onChangeStatus, onMove, onEdit, onSetLocation, onSetTime }: TodoItemProps) {
+function TodoItem({ item, onChangeStatus, onMove, onEdit, onSetLocation, onSetTime, onSetRepeat }: TodoItemProps) {
+  const [repeatOpen, setRepeatOpen] = useState(false);
+  const [repeatDraft, setRepeatDraft] = useState<number[]>([]);
   const [locationOpen, setLocationOpen] = useState(false);
   const [locationDraft, setLocationDraft] = useState("");
   const [timeOpen, setTimeOpen] = useState(false);
@@ -141,6 +148,43 @@ function TodoItem({ item, onChangeStatus, onMove, onEdit, onSetLocation, onSetTi
       setTimeOpen(false);
     }
   };
+
+  const repeatDays = parseDays(item.repeat);
+  const repeatText = repeatDays.length > 0 ? t.list.repeatText(repeatDays.map((day) => t.list.weekdays[day - 1])) : null;
+
+  const toggleRepeat = (open: boolean) => {
+    // A task that doesn't repeat yet starts with its own weekday ticked.
+    if (open) setRepeatDraft(repeatDays.length > 0 ? repeatDays : [isoWeekday(item.date)]);
+    setRepeatOpen(open);
+  };
+
+  const saveRepeat = (days: number[]) => {
+    setRepeatOpen(false);
+    const next = [...days].sort((a, b) => a - b);
+    if (next.join(",") !== repeatDays.join(",")) onSetRepeat(item, next);
+  };
+
+  const repeatEditor = (
+    <div className="todo-repeat-editor" {...stopDrag}>
+      <Checkbox.Group
+        className="todo-repeat-days"
+        value={repeatDraft}
+        onChange={(values) => setRepeatDraft(values as number[])}
+        options={t.list.weekdays.map((label, index) => ({ label, value: index + 1 }))}
+      />
+      <p className="todo-repeat-hint">{t.list.repeatHint}</p>
+      <div className="todo-location-buttons">
+        {repeatDays.length > 0 ? (
+          <Button size="small" type="text" danger onClick={() => saveRepeat([])}>
+            {t.list.stopRepeat}
+          </Button>
+        ) : null}
+        <Button size="small" type="primary" onClick={() => saveRepeat(repeatDraft)}>
+          {t.list.saveRepeat}
+        </Button>
+      </div>
+    </div>
+  );
 
   const locationEditor = (
     <div className="todo-location-editor" {...stopDrag}>
@@ -269,8 +313,13 @@ function TodoItem({ item, onChangeStatus, onMove, onEdit, onSetLocation, onSetTi
               {item.content}
             </span>
           )}
-          {item.time || item.location ? (
+          {item.time || item.location || repeatText ? (
             <span className="todo-item-extra">
+              {repeatText ? (
+                <span className="todo-item-repeat">
+                  <RetweetOutlined /> {repeatText}
+                </span>
+              ) : null}
               {item.time ? (
                 <span className="todo-item-time">
                   <ClockCircleOutlined /> {item.time}
@@ -319,6 +368,22 @@ function TodoItem({ item, onChangeStatus, onMove, onEdit, onSetLocation, onSetTi
                 destroyOnHidden
               >
                 <ClockCircleOutlined className={`todo-action todo-action-time ${item.time ? "todo-action-time-set" : ""}`} />
+              </Popover>
+            </HoverTooltip>
+          ) : null}
+          {!isDeleted ? (
+            <HoverTooltip title={t.list.setRepeat}>
+              <Popover
+                content={repeatEditor}
+                trigger="click"
+                placement="bottom"
+                open={repeatOpen}
+                onOpenChange={toggleRepeat}
+                destroyOnHidden
+              >
+                <RetweetOutlined
+                  className={`todo-action todo-action-repeat ${repeatText ? "todo-action-repeat-set" : ""}`}
+                />
               </Popover>
             </HoverTooltip>
           ) : null}
@@ -393,6 +458,7 @@ export default function TodoList({
   onEdit,
   onSetLocation,
   onSetTime,
+  onSetRepeat,
 }: TodoListProps) {
   // Stable id keeps dnd-kit's generated aria attributes identical between server and client render.
   const dndId = useId();
@@ -466,6 +532,7 @@ export default function TodoList({
                         onEdit={onEdit}
                         onSetLocation={onSetLocation}
                         onSetTime={onSetTime}
+                        onSetRepeat={onSetRepeat}
                       />
                     ))}
                   </ul>

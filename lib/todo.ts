@@ -15,6 +15,10 @@ export type Todo = {
   date: string;
   /** Sort key across all of the user's tasks; ties fall back to createdAt. */
   position: number;
+  /** ISO weekdays the task repeats on, e.g. '1,3' for Monday and Wednesday; null when it doesn't repeat. */
+  repeat: string | null;
+  /** The weekly rule this task belongs to. Copies made from the same rule share it. */
+  recurrenceId: string | null;
   createdAt: string;
   doneAt: string | null;
   deletedAt: string | null;
@@ -28,6 +32,8 @@ export const TODO_SELECT = {
   status: true,
   date: true,
   position: true,
+  repeat: true,
+  recurrenceId: true,
   createdAt: true,
   doneAt: true,
   deletedAt: true,
@@ -48,6 +54,8 @@ export function toTodo(row: TodoRow): Todo {
     status: row.status,
     date: row.date,
     position: row.position,
+    repeat: row.repeat,
+    recurrenceId: row.recurrenceId,
     createdAt: row.createdAt.toISOString(),
     doneAt: row.doneAt?.toISOString() ?? null,
     deletedAt: row.deletedAt?.toISOString() ?? null,

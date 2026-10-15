@@ -28,6 +28,8 @@ A todo list app with email sign-up, tasks grouped by date, drag-to-reorder, a ra
   **Works offline**: every change takes effect at once and is saved on the device first, so you can open, add and edit tasks without a connection; they sync automatically when you're back online, and changes from other tabs and devices are merged in. A bar at the top shows when you're offline, how many changes are waiting, or when a sync failed.
 - **到点提醒**：设了时间的任务会在开始前 15 分钟发通知；开启后即使应用关着也能收到，应用开着时页面里也会提示。
   **Reminders**: tasks with a time send a notification 15 minutes before they start, even when the app is closed once reminders are on; the open app shows them too.
+- **每周重复**：把课程、例会等设成每周几重复，每周日自动添加下一周的任务。
+  **Weekly tasks**: make classes or meetings repeat on chosen weekdays; next week's tasks are added every Sunday.
 - **PWA**：可以安装到手机或电脑。
   **PWA**: installable on phones and desktops.
 - **管理后台**：管理员可以查看用户增长和每日新增任务的图表。
@@ -47,12 +49,14 @@ Open the app and choose **Sign up**. Enter your email, tap **Send code**, type t
 
 - 在输入框写下任务，按回车或点「添加」，任务会归到今天。
   Type a task and press Enter or tap **Add**; it goes under today.
-- 每条任务右侧有六个按钮：✏️ 编辑、📍 地点、🕒 时间、📅 移到其他日期、✓ 标记完成、🗑 删除。
-  Each task has six buttons on the right: ✏️ edit, 📍 location, 🕒 time, 📅 move to another date, ✓ mark as done, 🗑 delete.
+- 每条任务右侧有七个按钮：✏️ 编辑、📍 地点、🕒 时间、🔁 每周重复、📅 移到其他日期、✓ 标记完成、🗑 删除。
+  Each task has seven buttons on the right: ✏️ edit, 📍 location, 🕒 time, 🔁 repeat weekly, 📅 move to another date, ✓ mark as done, 🗑 delete.
 - 点 📍 给任务填写地点（如"公司 3 楼会议室"），地点会显示在任务下方；再次点开可以修改或清除。
   Tap 📍 to add a place (e.g. "Office, room 3"); it shows under the task, and you can change or clear it later.
 - 点 🕒 给任务设置当天的时间（如 14:30），时间会显示在任务下方；再次点开可以修改或清除。
   Tap 🕒 to set a time on that day (e.g. 14:30); it shows under the task, and you can change or clear it later.
+- 点 🔁 勾选每周几（如每周一、三的课），保存后本周剩下的几天马上加上，之后每周日自动添加下一周的，内容、时间和地点沿用这条任务。每一天的任务都可以单独修改、完成或删除，删掉的不会再加回来。再次点开可以改日子或「停止重复」：去掉的日子和停止后，今天以后还没完成的会一起删掉，今天及以前的保留。
+  Tap 🔁 and tick weekdays (e.g. a class every Monday and Wednesday). The rest of this week is added at once, then each Sunday adds the week after, with this task's text, time and place. Each day's task can be edited, done or deleted on its own, and a deleted one doesn't come back. Open it again to change the days or **Stop repeating**: upcoming undone tasks on removed days (or all of them, when stopping) are deleted; today's and earlier ones stay.
 - 点 ✏️（电脑上也可以双击任务文字）直接修改内容：回车或点别处保存，Esc 取消。
   Tap ✏️ (or double-click the text on desktop) to edit a task: press Enter or click away to save, Esc to cancel.
 - 在「已完成」里点 ↩ 可以改回进行中；在「已删除」里点 ↩ 可以恢复。
@@ -265,9 +269,9 @@ The server checks every minute for tasks about to start. Vercel's free cron runs
 3. 在 **Advanced → Headers** 里加一个 `Authorization`，值为 `Bearer 你的CRON_SECRET`。
    Under **Advanced → Headers**, add `Authorization` with the value `Bearer <your CRON_SECRET>`.
 
-接口返回 `{"tasks":…, "sent":…}`，分别是这次提醒的任务数和发出的通知数。
+同一个定时器也负责每周日添加重复任务。接口返回 `{"repeated":…, "tasks":…, "sent":…}`，分别是这次补上下一周的重复规则数、提醒的任务数和发出的通知数。
 
-The endpoint answers `{"tasks":…, "sent":…}`: the tasks reminded this run and the notifications sent.
+The same scheduler also adds weekly tasks every Sunday. The endpoint answers `{"repeated":…, "tasks":…, "sent":…}`: the repeating rules extended to the next week, the tasks reminded and the notifications sent this run.
 
 ---
 
